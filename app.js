@@ -1,167 +1,76 @@
-const startBtn = document.getElementById('start-scanner');
-const video = document.getElementById('scanner-video');
-const scannerContainer = document.getElementById('scanner-container');
-const productInfo = document.getElementById('product-info');
-const productName = document.getElementById('product-name');
-const badIngredients = document.getElementById('bad-ingredients');
-const healthyAlternatives = document.getElementById('healthy-alternatives');
-const loadingOverlay = document.getElementById('loading-overlay');
-const historyContainer = document.getElementById('history');
-
-const badIngredientList = [
-    "açúcar", "xarope de glicose", "corante", "gordura hidrogenada",
-    "glutamato monossódico", "aspartame", "benzoato de sódio",
-    "nitrato", "nitrito", "ciclamato", "sacarina"
-];
-
-const healthySuggestions = [
-    "Alimentos naturais", "Frutas frescas", "Produtos sem aditivos",
-    "Água saborizada", "Snacks integrais"
-];
-
-async function startCamera() {
-    try {
-        loadingOverlay.style.display = 'flex';
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' } }
-        });
-
-        video.srcObject = stream;
-        await new Promise(resolve => video.onloadedmetadata = () => video.play().then(resolve));
-
-        video.style.display = 'block';
-        startBtn.style.display = 'none';
-        loadingOverlay.style.display = 'none';
-
-        startBarcodeScanner();
-    } catch (err) {
+// Inicia o scanner do Quagga
+Quagga.init({
+    inputStream: {
+        name: "Live",
+        type: "LiveStream",
+        target: document.querySelector('#scanner-video'),
+        constraints: {
+            facingMode: "environment", // Câmera traseira
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    },
+    decoder: {
+        readers: [
+            "ean_reader",        // EAN-13
+            "ean_8_reader",      // EAN-8
+            "upc_reader",        // UPC-A
+            "upc_e_reader",      // UPC-E
+            "code_128_reader",   // Code 128 (usado em alguns produtos)
+            "code_39_reader"     // Code 39 (usado em alguns outros produtos)
+        ]
+    }
+}, function(err) {
+    if (err) {
         console.error(err);
-        alert("Erro ao acessar a câmera: " + err.message);
-        loadingOverlay.style.display = 'none';
+        alert("Erro na inicialização do scanner.");
+        return;
     }
-}
 
-function stopCamera() {
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
-    }
-    video.style.display = 'none';
-    startBtn.style.display = 'inline-flex';
-    Quagga.stop();
-}
-
-function startBarcodeScanner() {
-    Quagga.init({
-        inputStream: {
-            type: "LiveStream",
-            target: video,
-            constraints: { facingMode: "environment" }
-        },
-        decoder: {
-            readers: ["ean_reader", "ean_13_reader", "upc_reader"]
-        }
-    }, (err) => {
-        if (err) {
-            console.error(err);
-            alert("Erro ao iniciar scanner: " + err.message);
-            return;
-        }
-        Quagga.start();
-    });
-
-    Quagga.onDetected(onBarcodeDetected);
-}
-
-function onBarcodeDetected(result) {
-    const code = result.codeResult.code;
-    console.log("Código detectado:", code);
-
-    Quagga.offDetected(onBarcodeDetected);
-    stopCamera();
-    fetchProductFromAPI(code);
-}
-
-async function fetchProductFromAPI(code) {
-    loadingOverlay.style.display = 'flex';
-
-    try {
-        const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
-        const data = await response.json();
-
-        scannerContainer.style.display = 'none';
-
-        if (!data.product) {
-            productName.innerHTML = `Produto não encontrado.`;
-            badIngredients.innerHTML = '';
-            healthyAlternatives.innerHTML = '';
-        } else {
-            const name = data.product.product_name || "Produto sem nome";
-            const ingredients = (data.product.ingredients_text || "").toLowerCase();
-            const badFound = badIngredientList.filter(item => ingredients.includes(item));
-
-            const color = getRiskColor(badFound.length);
-
-            productName.innerHTML = `<strong>${name}</strong>`;
-            productInfo.style.borderLeft = `8px solid ${color}`;
-            badIngredients.innerHTML = badFound.length
-                ? `<strong>Ingredientes Nocivos:</strong> ${badFound.join(', ')}`
-                : `Nenhum ingrediente nocivo detectado.`;
-
-            healthyAlternatives.innerHTML = badFound.length
-                ? `<strong>Alternativas Saudáveis:</strong> ${healthySuggestions.join(', ')}`
-                : '';
-
-            // Salvar no histórico
-            saveToHistory({
-                name,
-                badCount: badFound.length,
-                date: new Date().toLocaleString(),
-                color
-            });
-        }
-
-        productInfo.style.display = 'block';
-        renderHistory();
-    } catch (err) {
-        console.error(err);
-        alert("Erro ao buscar dados do produto.");
-    } finally {
-        loadingOverlay.style.display = 'none';
-    }
-}
-
-function getRiskColor(count) {
-    if (count === 0) return "#00c853"; // verde
-    if (count <= 2) return "#ffca28";  // amarelo
-    return "#e53935";                 // vermelho
-}
-
-function saveToHistory(entry) {
-    const history = JSON.parse(localStorage.getItem('scanHistory')) || [];
-    history.unshift(entry);
-    localStorage.setItem('scanHistory', JSON.stringify(history.slice(0, 10)));
-}
-
-function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('scanHistory')) || [];
-    historyContainer.innerHTML = '<h3>🕘 Histórico de Escaneamentos</h3>' +
-        history.map(item => `
-            <div class="history-item" style="border-left: 6px solid ${item.color};">
-                <strong>${item.name}</strong><br>
-                Risco: ${item.badCount} ingrediente(s) nocivo(s)<br>
-                <small>${item.date}</small>
-            </div>
-        `).join('');
-}
-
-document.getElementById('scan-again').addEventListener('click', () => {
-    productInfo.style.display = 'none';
-    scannerContainer.style.display = 'block';
-    startCamera();
+    // Inicia o scanner quando a inicialização for bem-sucedida
+    Quagga.start();
+    console.log("Scanner iniciado com sucesso.");
 });
 
-startBtn.addEventListener('click', startCamera);
-window.addEventListener('beforeunload', stopCamera);
+// Callback quando um código de barras é detectado
+Quagga.onDetected(function(result) {
+    const code = result.codeResult.code;
+    console.log("Código de barras detectado:", code);
 
-renderHistory();
+    // Aqui você pode fazer a busca do produto na API com o código detectado.
+    fetchProductInfo(code);
+});
+
+// Função para buscar informações do produto usando a API do Open Food Facts
+async function fetchProductInfo(code) {
+    // Exemplo de URL para API do Open Food Facts
+    const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${code}.json`;
+
+    // Exibe o overlay de carregamento enquanto faz a requisição
+    document.getElementById("loading-overlay").style.display = "flex";
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        // Quando o produto é encontrado, exibe as informações
+        if (data.product) {
+            const product = data.product;
+            document.getElementById('product-name').textContent = product.product_name || "Produto não encontrado";
+            document.getElementById('bad-ingredients').textContent = product.ingredients_text || "Ingredientes não disponíveis";
+            document.getElementById('healthy-alternatives').textContent = "Alternativas saudáveis ainda não implementadas.";
+
+            // Esconde o scanner e mostra as informações
+            document.getElementById("scanner-container").style.display = "none";
+            document.getElementById("product-info").style.display = "block";
+        } else {
+            alert("Produto não encontrado.");
+        }
+    } catch (error) {
+        console.error("Erro ao buscar o produto:", error);
+        alert("Erro ao obter informações do produto.");
+    } finally {
+        // Esconde o overlay de carregamento
+        document.getElementById("loading-overlay").style.display = "none";
+    }
+}
