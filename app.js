@@ -43,11 +43,20 @@ Quagga.onDetected(function(result) {
 
 // Função para buscar informações do produto usando a API do Open Food Facts
 async function fetchProductInfo(code) {
-    // Exemplo de URL para API do Open Food Facts
-    const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${code}.json`;
-
     // Exibe o overlay de carregamento enquanto faz a requisição
     document.getElementById("loading-overlay").style.display = "flex";
+
+    // Verifique se o código não está vazio
+    if (!code) {
+        alert("Código de barras inválido ou não detectado.");
+        document.getElementById("loading-overlay").style.display = "none";
+        return;
+    }
+
+    console.log("Buscando informações para o código:", code);
+    
+    // Exemplo de URL para API do Open Food Facts
+    const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${code}.json`;
 
     try {
         const response = await fetch(apiUrl);
@@ -78,6 +87,9 @@ async function fetchProductInfo(code) {
 // Função para buscar o produto com base no código digitado
 document.getElementById('search-product').addEventListener('click', function() {
     const barcode = document.getElementById('barcode-input').value.trim();
+
+    // Adiciona log para depuração
+    console.log("Código de barras digitado:", barcode);
 
     if (barcode) {
         fetchProductInfo(barcode);  // Busca o produto na API com o código fornecido
