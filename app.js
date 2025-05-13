@@ -74,3 +74,60 @@ async function fetchProductInfo(code) {
         document.getElementById("loading-overlay").style.display = "none";
     }
 }
+
+// Função para buscar o produto com base no código digitado
+document.getElementById('search-product').addEventListener('click', function() {
+    const barcode = document.getElementById('barcode-input').value.trim();
+
+    if (barcode) {
+        fetchProductInfo(barcode);  // Busca o produto na API com o código fornecido
+    } else {
+        alert("Por favor, digite um código de barras.");
+    }
+});
+
+// Inicia a câmera quando o botão é clicado
+const startBtn = document.getElementById('start-scanner');
+const video = document.getElementById('scanner-video');
+
+async function startCamera() {
+    try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('Seu navegador não suporta acesso à câmera');
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+
+        video.srcObject = stream;
+        
+        await new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                video.play().then(resolve).catch(err => {
+                    console.error("Erro ao reproduzir vídeo:", err);
+                    video.play().then(resolve).catch(e => {
+                        console.error("Falha na segunda tentativa:", e);
+                        alert("Toque na tela para ativar a câmera");
+                    });
+                });
+            };
+        });
+
+        video.style.display = 'block';
+        startBtn.style.display = 'none';
+        console.log("Câmera iniciada com sucesso!");
+
+    } catch (error) {
+        console.error("Erro ao acessar a câmera:", error);
+        alert(`Erro: ${error.message}`);
+    }
+}
+
+startBtn.addEventListener('click', startCamera);
+
+document.getElementById('scan-again').addEventListener('click', () => {
+    document.getElementById("product-info").style.display = 'none';
+    document.getElementById("scanner-container").style.display = 'block';
+    startCamera();
+});
