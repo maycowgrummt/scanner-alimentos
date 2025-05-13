@@ -1,88 +1,130 @@
-/* Estilos para o elemento de vídeo */
-#scanner-video {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    max-height: 60vh;
-    background-color: #000;
-    display: block; /* Já começa visível */
-    object-fit: cover;
-    transform: rotateY(180deg); /* Espelhar a imagem */
-    border-radius: 10px;
-    border: 2px solid #4CAF50;
-    margin: 20px auto;
+/* Estilos Gerais */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Container do scanner */
-#scanner-container {
-    position: relative;
+.container {
     width: 100%;
     max-width: 500px;
-    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
     text-align: center;
 }
 
-/* Overlay do scanner */
-.scanner-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+h1 {
+    color: #4CAF50;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
 }
 
+/* Container da Câmera Compacta */
+.scanner-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 300px; /* Largura reduzida */
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#scanner-video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3; /* Proporção ideal para câmeras */
+    display: block;
+    object-fit: cover;
+    transform: rotateY(180deg);
+    background: #000;
+}
+
+/* Moldura do Scanner */
 .scanner-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 80%;
     height: 30%;
-    border: 3px dashed #4CAF50;
+    border: 3px solid rgba(76, 175, 80, 0.7);
     border-radius: 8px;
-    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 100vmax rgba(0,0,0,0.6);
+    pointer-events: none;
 }
 
-@keyframes pulse {
-    0% { opacity: 0.8; }
-    50% { opacity: 0.4; }
-    100% { opacity: 0.8; }
-}
-
-/* Informações do produto */
+/* Área de Informações */
 #product-info {
     display: none;
-    width: 100%;
-    max-width: 500px;
-    margin: 20px auto;
-    padding: 20px;
+    margin-top: 20px;
+    padding: 15px;
     background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    text-align: left;
 }
 
-/* Botão de escanear novamente */
+#product-name {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.ingredient-section, .alternative-section {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.ingredient-section {
+    background-color: rgba(255, 152, 0, 0.1);
+    border-left: 3px solid #FF9800;
+}
+
+.alternative-section {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 3px solid #4CAF50;
+}
+
+/* Botão de Reescaneamento */
 #scan-again {
     background-color: #2196F3;
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-top: 15px;
     cursor: pointer;
-    margin: 20px auto 0;
-    display: block;
-    transition: all 0.3s;
+    width: 100%;
+    transition: background 0.3s;
 }
 
 #scan-again:hover {
     background-color: #0b7dda;
 }
 
-/* Mensagem de carregamento */
-.loading-message {
-    text-align: center;
-    margin: 20px;
+/* Mensagens de Status */
+.status-message {
+    margin: 10px 0;
     color: #666;
     font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 400px) {
+    .scanner-wrapper {
+        max-width: 250px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
 }
