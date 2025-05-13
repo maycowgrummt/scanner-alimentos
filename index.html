@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner de Alimentos</title>
   <style>
     * {
@@ -61,12 +61,10 @@
       text-align: center;
     }
 
-    #scanner-video {
+    #reader {
       width: 100%;
       max-width: 400px;
-      border: 2px solid #4CAF50;
-      border-radius: 8px;
-      background: #000;
+      margin: auto;
     }
 
     .hint {
@@ -101,17 +99,12 @@
 <body>
   <div class="container">
     <h1>Scanner de Alimentos</h1>
-    <p>Toque em "Iniciar Scanner" para identificar ingredientes nocivos em produtos.</p>
+    <p>Verifique ingredientes nocivos e veja alternativas saudáveis.</p>
     <button id="start-scanner">INICIAR SCANNER</button>
 
     <div id="scanner-container">
-      <video 
-        id="scanner-video" 
-        autoplay 
-        playsinline 
-        muted
-      ></video>
-      <p class="hint">Toque no vídeo para simular leitura (modo de teste).</p>
+      <div id="reader"></div>
+      <p class="hint">Aponte a câmera para o código de barras do produto</p>
     </div>
 
     <div id="product-info">
@@ -121,6 +114,9 @@
       <button id="scan-again">ESCANEAR NOVAMENTE</button>
     </div>
   </div>
+
+  <!-- Biblioteca de leitura de código de barras -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <script>
     const produtos = [
@@ -139,7 +135,6 @@
     ];
 
     const startBtn = document.getElementById('start-scanner');
-    const video = document.getElementById('scanner-video');
     const scannerContainer = document.getElementById('scanner-container');
     const productInfo = document.getElementById('product-info');
     const productName = document.getElementById('product-name');
@@ -147,37 +142,42 @@
     const healthyAlternatives = document.getElementById('healthy-alternatives');
     const scanAgainBtn = document.getElementById('scan-again');
 
-    startBtn.addEventListener('click', async () => {
+    let html5QrCode;
+
+    startBtn.addEventListener('click', () => {
+      startBtn.style.display = "none";
       scannerContainer.style.display = "block";
 
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "environment"
-          }
-        });
+      html5QrCode = new Html5Qrcode("reader");
 
-        video.srcObject = stream;
-        startBtn.style.display = "none";
+      const config = {
+        fps: 10,
+        qrbox: 250,
+        aspectRatio: 1.333,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true
+        },
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.UPC_A
+        ]
+      };
 
-        // Simulação de leitura — substitua por leitura real se necessário
-        video.onclick = () => {
-          const codigoTeste = "7891000315507";
-          mostrarProduto(codigoTeste);
-        };
-
-      } catch (err) {
-        let mensagem;
-        if (err.name === "NotAllowedError") {
-          mensagem = "Permissão da câmera negada. Ative nas configurações do navegador.";
-        } else if (err.name === "NotFoundError") {
-          mensagem = "Nenhuma câmera encontrada.";
-        } else {
-          mensagem = `Erro: ${err.message}`;
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          html5QrCode.stop();
+          mostrarProduto(decodedText);
+        },
+        (err) => {
+          // Pode ignorar erros de leitura
         }
-        alert(mensagem);
+      ).catch(err => {
+        alert("Erro ao iniciar câmera: " + err);
         console.error(err);
-      }
+      });
     });
 
     function mostrarProduto(codigo) {
@@ -192,12 +192,36 @@
         productInfo.style.display = "block";
       } else {
         alert("Produto não cadastrado. Adicione manualmente.");
+        productInfo.style.display = "none";
+        startBtn.style.display = "block";
       }
     }
 
     scanAgainBtn.addEventListener('click', () => {
       productInfo.style.display = "none";
       scannerContainer.style.display = "block";
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: 250,
+          aspectRatio: 1.333,
+          experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true
+          },
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.UPC_A
+          ]
+        },
+        (decodedText) => {
+          html5QrCode.stop();
+          mostrarProduto(decodedText);
+        },
+        (err) => {}
+      );
     });
   </script>
 </body>
