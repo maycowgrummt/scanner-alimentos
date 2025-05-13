@@ -37,9 +37,9 @@ async function startCamera() {
         });
 
         // 5. Mostrar feedback visual
-        video.style.display = 'block';
-        startBtn.style.display = 'none';
-        scannerContainer.style.display = 'block'; // Mostrar o container de vídeo
+        video.style.display = 'block'; // Mostrar o vídeo
+        startBtn.style.display = 'none'; // Ocultar o botão
+        scannerContainer.style.display = 'block'; // Exibir o container da câmera
         console.log("Câmera iniciada com sucesso!");
     } catch (error) {
         console.error("Erro ao acessar a câmera:", error);
