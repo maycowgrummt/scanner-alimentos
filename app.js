@@ -1,145 +1,110 @@
-// Elementos da página
-const startBtn = document.getElementById('start-scanner');
-const video = document.getElementById('scanner-video');
-const scannerContainer = document.getElementById('scanner-container');
-const productInfo = document.getElementById('product-info');
-const loadingOverlay = document.getElementById('loading-overlay');
-
-// Função para iniciar a câmera
-async function startCamera() {
-    try {
-        // 1. Verificar se o navegador suporta a API de mídia
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('Seu navegador não suporta acesso à câmera');
-        }
-
-        // 2. Solicitar acesso à câmera
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: "environment",  // Usar câmera traseira
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            }
-        });
-
-        // 3. Conectar o stream ao elemento de vídeo
-        video.srcObject = stream;
-        
-        // 4. Esperar o vídeo estar pronto
-        await new Promise((resolve) => {
-            video.onloadedmetadata = () => {
-                video.play().then(resolve).catch(err => {
-                    console.error("Erro ao reproduzir vídeo:", err);
-                    // Tentar novamente (necessário para alguns navegadores)
-                    video.play().then(resolve).catch(e => {
-                        console.error("Falha na segunda tentativa:", e);
-                        alert("Toque na tela para ativar a câmera");
-                    });
-                });
-            };
-        });
-
-        // 5. Mostrar feedback visual
-        video.style.display = 'block';
-        startBtn.style.display = 'none';
-        console.log("Câmera iniciada com sucesso!");
-
-        // Iniciar o scanner após iniciar a câmera
-        startScanner();
-
-    } catch (error) {
-        console.error("Erro ao acessar a câmera:", error);
-        alert(`Erro: ${error.message}`);
-    }
-}
-
-// Função para iniciar o scanner de código de barras
-function startScanner() {
-    // Exibe o overlay de carregamento enquanto o scanner está em funcionamento
-    loadingOverlay.style.display = "flex";
-
-    Quagga.init({
-        inputStream: {
-            name: "live",
-            type: "LiveStream",
-            target: video,
-            constraints: {
-                facingMode: "environment"
-            }
-        },
-        decoder: {
-            readers: ["ean_reader", "upc_reader", "ean_8_reader"]
-        }
-    }, (err) => {
-        if (err) {
-            console.error("Erro ao iniciar o scanner:", err);
-            loadingOverlay.style.display = "none";
-            return;
-        }
-        Quagga.start();
-        console.log("Scanner iniciado!");
-    });
-
-    Quagga.onDetected(handleBarcode);
-}
-
-// Função para lidar com o código de barras detectado
-function handleBarcode(result) {
-    const code = result.codeResult.code;
-    console.log("Código de barras detectado:", code);
-
-    // Buscar informações do produto com o código de barras
-    fetchProductInfo(code);
-    Quagga.stop();  // Para o scanner depois de ler um código
-}
-
 // Função para buscar informações do produto usando a API do Open Food Facts
 async function fetchProductInfo(code) {
-    loadingOverlay.style.display = "flex";
+    // Exibe o overlay de carregamento enquanto faz a requisição
+    document.getElementById("loading-overlay").style.display = "flex";
 
+    // Verifique se o código não está vazio
+    if (!code) {
+        alert("Código de barras inválido.");
+        document.getElementById("loading-overlay").style.display = "none";
+        return;
+    }
+
+    console.log("Buscando informações para o código:", code);
+    
+    // Exemplo de URL para API do Open Food Facts
     const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${code}.json`;
 
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
 
+        // Quando o produto é encontrado, exibe as informações
         if (data.product) {
             const product = data.product;
             document.getElementById('product-name').textContent = product.product_name || "Produto não encontrado";
             document.getElementById('bad-ingredients').textContent = product.ingredients_text || "Ingredientes não disponíveis";
             document.getElementById('healthy-alternatives').textContent = "Alternativas saudáveis ainda não implementadas.";
 
-            // Exibe as informações e esconde o scanner
-            scannerContainer.style.display = 'none';
-            productInfo.style.display = 'block';
+            // Esconde o campo de digitação e mostra as informações
+            document.getElementById("scanner-container").style.display = "none";
+            document.getElementById("product-info").style.display = "block";
         } else {
-            alert("Produto não encontrado.");
+            showError("Produto não encontrado.");
         }
     } catch (error) {
         console.error("Erro ao buscar o produto:", error);
-        alert("Erro ao obter informações do produto.");
+        showError("Erro ao obter informações do produto.");
     } finally {
-        loadingOverlay.style.display = "none";
+        // Esconde o overlay de carregamento
+        document.getElementById("loading-overlay").style.display = "none";
     }
 }
 
-// Event listener para o botão "Iniciar Scanner"
-startBtn.addEventListener('click', startCamera);
+// Exibe a mensagem de erro de forma controlada
+function showError(message) {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
+}
 
-// Event listener para o botão "Escanear Novamente"
-document.getElementById('scan-again').addEventListener('click', () => {
-    productInfo.style.display = 'none';
-    scannerContainer.style.display = 'block';
+// Esconde a mensagem de erro
+document.getElementById('close-error').addEventListener('click', function() {
+    document.getElementById("error-message").style.display = "none";
+});
+
+// Função para iniciar a câmera e o scanner
+function startCamera() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then((stream) => {
+                const video = document.getElementById('scanner-video');
+                video.srcObject = stream;
+
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: video
+                    },
+                    decoder: {
+                        readers: ["ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"]
+                    }
+                }, function(err) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    Quagga.start();
+                });
+
+                // Quando o código de barras é detectado
+                Quagga.onDetected(function(result) {
+                    const barcode = result.codeResult.code;
+                    console.log("Código de barras detectado:", barcode);
+                    fetchProductInfo(barcode); // Busca o produto
+                });
+            })
+            .catch(function(err) {
+                console.log("Erro ao acessar a câmera:", err);
+            });
+    }
+}
+
+// Event listener para o botão de iniciar scanner
+document.getElementById("start-scanner").addEventListener('click', function() {
+    startCamera();
+    document.getElementById('scanner-container').style.display = 'none';
+});
+
+// Função para limpar e voltar ao início
+document.getElementById('scan-again').addEventListener('click', function() {
+    document.getElementById('product-info').style.display = 'none';
+    document.getElementById('scanner-container').style.display = 'block';
     startCamera();
 });
 
-// Limpar ao sair
-window.addEventListener('beforeunload', stopCamera);
-function stopCamera() {
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
-    }
-    video.style.display = 'none';
-    startBtn.style.display = 'block';
-}
+// Iniciar scanner automaticamente quando a página carregar
+window.addEventListener('load', function() {
+    startCamera();
+});
