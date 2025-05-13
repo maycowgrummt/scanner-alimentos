@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +9,20 @@
 <body>
     <div class="container">
         <h1>Scanner de Alimentos</h1>
+
+        <!-- Iniciar Scanner -->
         <button id="start-scanner">INICIAR SCANNER</button>
 
+        <!-- Container do Scanner -->
         <div id="scanner-container">
             <video id="scanner-video" autoplay></video>
+            <p class="hint">Clique na tela para simular o escaneamento</p>
         </div>
 
+        <!-- Informações do Produto -->
         <div id="product-info">
             <h2 id="product-name"></h2>
-            <p><strong>Ingredientes prejudiciais:</strong> <span id="bad-ingredients"></span></p>
+            <p><strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
             <p><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
             <button id="scan-again">Escanear Novamente</button>
         </div>
