@@ -1,56 +1,100 @@
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #111;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  text-align: center;
-}
-
-.container {
-  max-width: 500px;
-  width: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f3f3f3;
+  color: #333;
   padding: 20px;
 }
 
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
 h1 {
-  font-size: 24px;
+  text-align: center;
+  color: #2c3e50;
   margin-bottom: 20px;
+}
+
+#scanner-container {
+  background-color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
 }
 
 video {
   width: 100%;
   height: auto;
-  border-radius: 12px;
-  background: #000;
-  margin-bottom: 10px;
+  display: block;
 }
 
-#camera-status {
-  font-size: 14px;
-  color: #aaa;
-  margin-bottom: 10px;
+.status {
+  padding: 10px;
+  color: #fff;
+  background: #3498db;
+  text-align: center;
+  font-size: 0.9em;
 }
 
-button {
+#result {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#product-info h2 {
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+#product-info p {
+  margin: 5px 0;
+  font-size: 0.95em;
+}
+
+#product-info button {
   margin-top: 10px;
-  padding: 10px 20px;
-  border: none;
-  background-color: #00c853;
+  padding: 10px;
+  background: #3498db;
   color: white;
-  font-size: 16px;
-  border-radius: 8px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #00b342;
+#product-info button:hover {
+  background: #2980b9;
+}
+
+.history-box {
+  margin-top: 25px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.history-box h3 {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  color: #555;
+}
+
+.history-item {
+  padding: 5px 0;
+  font-size: 0.9em;
+  border-bottom: 1px solid #ddd;
+}
+
+.history-item:last-child {
+  border-bottom: none;
 }
