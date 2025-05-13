@@ -1,94 +1,106 @@
-// Elementos da página
-const startBtn = document.getElementById('start-scanner');
-const video = document.getElementById('scanner-video');
-const scannerContainer = document.getElementById('scanner-container');
-const productInfo = document.getElementById('product-info');
+document.addEventListener('DOMContentLoaded', function() {
+    const startBtn = document.getElementById('start-scanner');
+    const video = document.getElementById('scanner-video');
+    const productInfo = document.getElementById('product-info');
+    const scanAgainBtn = document.getElementById('scan-again');
 
-// Função para iniciar a câmera
-async function startCamera() {
-    try {
-        // 1. Verificar se o navegador suporta a API de mídia
+    // Verificar compatibilidade
+    function checkCompatibility() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('Seu navegador não suporta acesso à câmera');
+            alert('Seu navegador não suporta acesso à câmera ou você não está em HTTPS');
+            return false;
         }
+        return true;
+    }
 
-        // 2. Solicitar acesso à câmera
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: "environment",  // Usar câmera traseira
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            }
-        });
+    // Iniciar câmera
+    async function startCamera() {
+        if (!checkCompatibility()) return;
 
-        // 3. Conectar o stream ao elemento de vídeo
-        video.srcObject = stream;
-        
-        // 4. Esperar o vídeo estar pronto
-        await new Promise((resolve) => {
-            video.onloadedmetadata = () => {
-                video.play()
-                    .then(resolve)
-                    .catch(err => {
-                        console.error("Erro ao reproduzir vídeo:", err);
-                        // Tentar novamente (necessário para alguns navegadores)
-                        video.play().then(resolve).catch(e => {
-                            console.error("Falha na segunda tentativa:", e);
-                            alert("Toque na tela para ativar a câmera");
+        try {
+            startBtn.disabled = true;
+            startBtn.textContent = 'Acessando câmera...';
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            });
+
+            video.srcObject = stream;
+            video.playsInline = true;
+            video.muted = true;
+
+            // Esperar o vídeo estar pronto
+            await new Promise((resolve) => {
+                video.onloadedmetadata = () => {
+                    video.play()
+                        .then(resolve)
+                        .catch(e => {
+                            console.error('Erro ao reproduzir:', e);
+                            // Tentativa alternativa para iOS
+                            video.play().then(resolve).catch(e2 => {
+                                console.error('Falha na segunda tentativa:', e2);
+                                alert('Toque na tela para ativar a câmera');
+                            });
                         });
-                    });
-            };
-        });
+                };
+            });
 
-        // 5. Mostrar feedback visual
-        video.style.display = 'block';
-        startBtn.style.display = 'none';
-        console.log("Câmera iniciada com sucesso!");
+            video.style.display = 'block';
+            startBtn.style.display = 'none';
+            console.log('Câmera iniciada com sucesso!');
 
-    } catch (error) {
-        console.error("Erro ao acessar a câmera:", error);
-        alert(`Erro: ${error.message}`);
+        } catch (error) {
+            console.error('Erro na câmera:', error);
+            handleCameraError(error);
+            startBtn.disabled = false;
+            startBtn.textContent = 'Iniciar Scanner';
+        }
     }
-}
 
-// Event listener para o botão
-startBtn.addEventListener('click', startCamera);
-
-// Função para limpar a câmera
-function stopCamera() {
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
+    // Tratar erros
+    function handleCameraError(error) {
+        let message = 'Erro ao acessar a câmera: ';
+        
+        switch(error.name) {
+            case 'NotAllowedError':
+                message += 'Permissão negada. Ative nas configurações do navegador.';
+                break;
+            case 'NotFoundError':
+                message += 'Nenhuma câmera encontrada.';
+                break;
+            case 'NotReadableError':
+                message += 'Câmera já em uso por outro aplicativo.';
+                break;
+            default:
+                message += error.message;
+        }
+        
+        alert(message);
     }
-    video.style.display = 'none';
-    startBtn.style.display = 'block';
-}
 
-// Event listener para o botão "Escanear Novamente"
-document.getElementById('scan-again').addEventListener('click', () => {
-    productInfo.style.display = 'none';
-    scannerContainer.style.display = 'block';
-    startCamera();
-});
+    // Parar câmera
+    function stopCamera() {
+        if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+        }
+        video.style.display = 'none';
+        startBtn.style.display = 'block';
+        startBtn.disabled = false;
+        startBtn.textContent = 'Iniciar Scanner';
+    }
 
-// Limpar ao sair
-window.addEventListener('beforeunload', stopCamera);
-// Debug: Verificar status da câmera
-setInterval(() => {
-    console.log("Status do vídeo:", {
-        readyState: video.readyState,
-        paused: video.paused,
-        error: video.error,
-        srcObject: !!video.srcObject
+    // Event listeners
+    startBtn.addEventListener('click', startCamera);
+    scanAgainBtn.addEventListener('click', () => {
+        productInfo.style.display = 'none';
+        startCamera();
     });
-    
-    if (video.srcObject) {
-        console.log("Tracks ativas:", 
-            video.srcObject.getTracks().map(t => ({
-                kind: t.kind,
-                readyState: t.readyState,
-                enabled: t.enabled
-            }))
-        );
-    }
-}, 3000);
+
+    // Limpar ao sair
+    window.addEventListener('beforeunload', stopCamera);
+});
