@@ -1,27 +1,48 @@
-const video = document.getElementById('scanner-video');
 const statusEl = document.getElementById('camera-status');
+const resultEl = document.getElementById('result');
+const barcodeEl = document.getElementById('barcode');
 
-async function startCamera() {
-  try {
-    // Solicitar acesso à câmera traseira
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" } // Traseira
-      },
-      audio: false
-    });
-
-    video.srcObject = stream;
-    await video.play();
-
-    statusEl.textContent = 'Câmera ativa. Aponte para o código de barras.';
-    console.log('Câmera iniciada com sucesso.');
-  } catch (err) {
-    console.error('Erro ao acessar a câmera:', err);
-    statusEl.textContent = 'Erro ao acessar a câmera. Verifique as permissões.';
-    alert('Erro ao acessar a câmera. Permita o acesso no navegador.');
+// Função para iniciar QuaggaJS
+function startScanner() {
+  if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+    alert("Seu navegador não suporta acesso à câmera.");
+    return;
   }
+
+  Quagga.init({
+    inputStream: {
+      name: "Live",
+      type: "LiveStream",
+      target: document.querySelector('#scanner-video'),
+      constraints: {
+        facingMode: "environment" // câmera traseira
+      }
+    },
+    decoder: {
+      readers: ["ean_reader", "ean_13_reader", "upc_reader", "code_128_reader"]
+    }
+  }, function (err) {
+    if (err) {
+      console.error(err);
+      alert("Erro ao iniciar o scanner.");
+      return;
+    }
+    Quagga.start();
+    statusEl.textContent = "Aponte a câmera para o código de barras.";
+  });
+
+  Quagga.onDetected(data => {
+    const code = data.codeResult.code;
+    if (code) {
+      console.log("Código detectado:", code);
+      Quagga.stop();
+      document.getElementById("scanner-container").style.display = "none";
+      resultEl.style.display = "block";
+      barcodeEl.textContent = code;
+      statusEl.textContent = "";
+    }
+  });
 }
 
-// Iniciar câmera automaticamente
-window.addEventListener('load', startCamera);
+// Iniciar scanner automaticamente
+window.addEventListener('load', startScanner);
