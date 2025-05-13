@@ -1,32 +1,79 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Food Scanner - Conscientização Alimentar</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Scanner de Produtos</title>
 </head>
 <body>
-    <div class="container">
-        <h1>🔍 Scanner de Alimentos Ultraprocessados</h1>
-        <p>Escaneie o código de barras para ver ingredientes nocivos e alternativas saudáveis.</p>
-        
-        <button id="start-scanner">▶️ Iniciar Scanner</button>
-        
-        <div id="scanner-container">
-            <video id="scanner-video" autoplay playsinline muted></video>
-            <p class="hint">Aponte para o código de barras do produto</p>
-        </div>
-        
-        <div id="product-info">
-            <h2 id="product-name"></h2>
-            <p><strong>⚠️ Ingredientes Nocivos:</strong> <span id="bad-ingredients"></span></p>
-            <p><strong>🍎 Alternativas Saudáveis:</strong> <span id="healthy-alternatives"></span></p>
-            <button id="scan-again">🔄 Escanear Outro</button>
-        </div>
+    <button id="start-scanner">INICIAR SCANNER</button>
+    
+    <div id="scanner-container" style="display:none;">
+        <video id="scanner-video" autoplay playsinline style="width: 100%; max-width: 400px;"></video>
+        <p class="hint">Clique no vídeo para simular leitura</p>
+    </div>
+    
+    <div id="product-info" style="display:none;">
+        <h2 id="product-name"></h2>
+        <p><strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
+        <p><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
+        <button id="scan-again">Escanear Novamente</button>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        const produtos = [
+            {
+                codigo: "7891000315507",
+                nome: "Biscoito Recheado Chocolate",
+                ingredientes_nocivos: "Açúcar, gordura vegetal hidrogenada, corante artificial",
+                alternativas: "Biscoito integral sem recheio, frutas desidratadas"
+            }
+        ];
+
+        const startBtn = document.getElementById('start-scanner');
+        const video = document.getElementById('scanner-video');
+        const scannerContainer = document.getElementById('scanner-container');
+        const productInfo = document.getElementById('product-info');
+        const productName = document.getElementById('product-name');
+        const badIngredients = document.getElementById('bad-ingredients');
+        const healthyAlternatives = document.getElementById('healthy-alternatives');
+        const scanAgainBtn = document.getElementById('scan-again');
+
+        startBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" }
+                });
+                video.srcObject = stream;
+                scannerContainer.style.display = "block";
+                startBtn.style.display = "none";
+
+                video.onclick = () => {
+                    const codigoTeste = "7891000315507";
+                    mostrarProduto(codigoTeste);
+                };
+            } catch (err) {
+                alert("Erro ao acessar a câmera: " + err.message);
+            }
+        });
+
+        function mostrarProduto(codigo) {
+            const produto = produtos.find(p => p.codigo === codigo);
+            if (produto) {
+                productName.textContent = produto.nome;
+                badIngredients.textContent = produto.ingredientes_nocivos;
+                healthyAlternatives.textContent = produto.alternativas;
+
+                scannerContainer.style.display = "none";
+                productInfo.style.display = "block";
+            } else {
+                alert("Produto não encontrado.");
+            }
+        }
+
+        scanAgainBtn.addEventListener('click', () => {
+            productInfo.style.display = "none";
+            scannerContainer.style.display = "block";
+        });
+    </script>
 </body>
 </html>
