@@ -1,0 +1,14 @@
+[
+    {
+        "codigo": "7891000315507",
+        "nome": "Biscoito Recheado Chocolate",
+        "ingredientes_nocivos": "Açúcar, gordura vegetal, corante artificial",
+        "alternativas": "Biscoito integral, frutas secas"
+    },
+    {
+        "codigo": "7896051116011",
+        "nome": "Refrigerante de Cola",
+        "ingredientes_nocivos": "Açúcar, corante caramelo IV, ácido fosfórico",
+        "alternativas": "Água com gás e limão, chá gelado natural"
+    }
+]

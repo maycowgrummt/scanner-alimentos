@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Food Scanner - Conscientização Alimentar</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+</head>
+<body>
+    <h1>🔍 Scanner de Alimentos Ultraprocessados</h1>
+    
+    <div id="scanner-container">
+        <video id="scanner-video" width="100%"></video>
+        <button id="start-scanner">▶️ Iniciar Scanner</button>
+    </div>
+    
+    <div id="product-info" style="display:none;">
+        <h2 id="product-name"></h2>
+        <p><strong>⚠️ Ingredientes Nocivos:</strong> <span id="bad-ingredients"></span></p>
+        <p><strong>🍎 Alternativas Saudáveis:</strong> <span id="healthy-alternatives"></span></p>
+        <button onclick="resetScanner()">🔄 Escanear Outro</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
