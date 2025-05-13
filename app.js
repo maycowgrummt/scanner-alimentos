@@ -1,52 +1,51 @@
-// Banco de dados de produtos (pode ser substituído pelo seu JSON depois)
+// Banco de dados de exemplo
 const produtos = [
-    { codigo: "7891000315507", nome: "Biscoito Recheado", ingredientes: "Corantes, gordura vegetal", alternativas: "Biscoito integral" },
-    { codigo: "7896051116011", nome: "Refrigerante", ingredientes: "Açúcar, acidulante", alternativas: "Água com gás" }
+    { codigo: "7891000315507", nome: "Biscoito Recheado", ingredientes: "Corante artificial", alternativas: "Biscoito integral" }
 ];
 
 // Elementos da página
 const video = document.getElementById('scanner-video');
 const startBtn = document.getElementById('start-scanner');
-const productInfo = document.getElementById('product-info');
 
-// Função para iniciar a câmera
+// Função principal
 startBtn.addEventListener('click', async () => {
     try {
+        // 1. Solicita permissão da câmera
         const stream = await navigator.mediaDevices.getUserMedia({ 
             video: {
                 facingMode: "environment", // Câmera traseira
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            }
+                width: { ideal: 1280 }
+            },
+            audio: false
         });
+        
+        // 2. Mostra o vídeo na tela
         video.srcObject = stream;
-        video.play();
+        video.style.display = "block";
         startBtn.textContent = "Escaneando...";
         
-        // Simula a leitura (você pode integrar um leitor real depois)
+        // 3. Configura o leitor de código (simulação)
         video.onclick = () => {
-            const codigoTeste = "7891000315507"; // Simula um código lido
-            mostrarProduto(codigoTeste);
+            const produto = produtos[0]; // Simula leitura
+            document.getElementById('product-info').innerHTML = `
+                <h3>${produto.nome}</h3>
+                <p>Ingredientes: ${produto.ingredientes}</p>
+                <p>Substitua por: ${produto.alternativas}</p>
+            `;
         };
         
     } catch (err) {
-        alert("Erro ao acessar a câmera: " + err.message);
-        console.error(err);
+        // Tratamento de erros detalhado
+        let mensagem;
+        if (err.name === "NotAllowedError") {
+            mensagem = "Permissão da câmera negada!";
+        } else if (err.name === "NotFoundError") {
+            mensagem = "Nenhuma câmera encontrada.";
+        } else {
+            mensagem = `Erro desconhecido: ${err.message}`;
+        }
+        
+        alert(mensagem);
+        console.error("Erro completo:", err);
     }
 });
-
-// Função para mostrar o produto (substitua pela sua lógica real)
-function mostrarProduto(codigo) {
-    const produto = produtos.find(p => p.codigo === codigo);
-    if (produto) {
-        productInfo.innerHTML = `
-            <h3>${produto.nome}</h3>
-            <p><strong>Ingredientes nocivos:</strong> ${produto.ingredientes}</p>
-            <p><strong>Alternativas:</strong> ${produto.alternativas}</p>
-            <button onclick="window.location.reload()">Voltar</button>
-        `;
-        productInfo.style.display = "block";
-    } else {
-        alert("Produto não cadastrado!");
-    }
-}
