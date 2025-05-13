@@ -5,24 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scanner de Alimentos</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>Scanner de Alimentos</h1>
+  <div class="app-container">
+    <h1>📷 Scanner de Alimentos</h1>
 
-    <div class="scanner-section">
+    <div class="card">
       <video id="video" autoplay muted playsinline></video>
-      <button id="start-scan">Iniciar Scanner</button>
-      <p>Ou digite o código de barras:</p>
-      <input type="text" id="manual-input" placeholder="Digite o código de barras" />
+      <button id="start-scan">📷 Iniciar Scanner</button>
+    </div>
+
+    <div class="card">
+      <p>🔍 Ou digite o código de barras:</p>
+      <input type="text" id="manual-input" placeholder="Ex: 7891000244351" />
       <button id="search-btn">Buscar Produto</button>
     </div>
 
-    <div class="result" id="product-result" style="display: none;">
+    <div class="card result" id="product-result" style="display: none;">
       <h2 id="product-name"></h2>
       <p><strong>Ingredientes:</strong> <span id="ingredients"></span></p>
-      <p><strong>Classificação:</strong> <span id="grade"></span></p>
-      <button id="new-scan">Escanear Outro</button>
+      <p><strong>Classificação Nutricional:</strong> <span id="grade"></span></p>
+      <button id="new-scan">🔄 Escanear Outro</button>
     </div>
   </div>
 
