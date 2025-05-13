@@ -7,6 +7,7 @@ const manualInput = document.getElementById("manual-input");
 const searchBtn = document.getElementById("search-btn");
 const newScanBtn = document.getElementById("new-scan");
 
+// Iniciar câmera ao carregar
 function startScanner() {
   Quagga.init({
     inputStream: {
@@ -19,11 +20,12 @@ function startScanner() {
     },
     decoder: {
       readers: ["ean_reader"]
-    }
+    },
+    locate: true
   }, err => {
     if (err) {
-      console.error(err);
-      alert("Erro ao iniciar a câmera.");
+      console.error("Erro ao iniciar o Quagga:", err);
+      alert("Erro ao acessar a câmera.");
       return;
     }
     Quagga.start();
@@ -36,6 +38,7 @@ function startScanner() {
   });
 }
 
+// Buscar produto pela API
 function fetchProduct(code) {
   fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`)
     .then(res => res.json())
@@ -47,8 +50,8 @@ function fetchProduct(code) {
         grade.textContent = product.nutriscore_grade ? product.nutriscore_grade.toUpperCase() : "Não informado";
         resultContainer.style.display = "block";
       } else {
-        alert("Produto não encontrado!");
-        startScanner(); // tentar novamente
+        alert("Produto não encontrado.");
+        startScanner();
       }
     })
     .catch(() => {
@@ -57,17 +60,19 @@ function fetchProduct(code) {
     });
 }
 
+// Buscar manualmente
 searchBtn.addEventListener("click", () => {
   const code = manualInput.value.trim();
   if (code) fetchProduct(code);
 });
 
+// Novo scan
 newScanBtn.addEventListener("click", () => {
   resultContainer.style.display = "none";
   startScanner();
 });
 
-// Iniciar scanner automaticamente ao abrir a página
+// Iniciar câmera automaticamente
 window.addEventListener("load", () => {
-  startScanner();
+  setTimeout(startScanner, 500); // dar tempo para o vídeo carregar
 });
