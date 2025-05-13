@@ -1,97 +1,83 @@
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    flex-direction: column;
 }
 
 .container {
-    max-width: 600px;
-    width: 100%;
-    background-color: #fff;
+    background-color: white;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
 }
 
 h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    text-align: center;
     color: #333;
+    margin-bottom: 20px;
 }
 
 #scanner-container {
-    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 #scanner-video {
     width: 100%;
-    border-radius: 10px;
+    max-width: 300px;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
 
-button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #007bff;
-    color: #fff;
+#start-scanner {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    font-size: 16px;
 }
 
-button:hover {
-    background-color: #0056b3;
-}
-
-#manual-input {
-    margin-top: 20px;
-}
-
-#barcode-input {
-    width: 80%;
-    padding: 10px;
-    font-size: 1rem;
-    margin-right: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+#start-scanner:hover {
+    background-color: #45a049;
 }
 
 #product-info {
-    display: none;
+    text-align: center;
+}
+
+#scan-again {
+    padding: 10px 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#scan-again:hover {
+    background-color: #d32f2f;
 }
 
 #loading-overlay {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem;
-    border-radius: 10px;
-}
-
-.hint {
-    font-size: 0.9rem;
-    color: #777;
-}
-
-#scan-again {
-    margin-top: 20px;
-    background-color: #28a745;
-}
-
-#scan-again:hover {
-    background-color: #218838;
 }
