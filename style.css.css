@@ -1,127 +1,84 @@
-body {
-    font-family: 'Roboto', sans-serif;
+* {
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 20px;
 }
 
 .container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px;
     width: 100%;
-    max-width: 400px;
 }
 
 h1 {
-    text-align: center;
-    color: #333;
+    font-size: 2em;
     margin-bottom: 20px;
 }
 
 #scanner-container {
-    text-align: center;
-    margin-bottom: 20px;
+    margin: 20px 0;
+    position: relative;
 }
 
 #scanner-video {
     width: 100%;
-    max-width: 300px;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    max-width: 600px;
+    height: auto;
+    display: none;
+    border-radius: 10px;
 }
 
-#start-scanner {
+button {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1em;
     padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 20px;
 }
 
-#start-scanner:hover {
+button:hover {
     background-color: #0056b3;
 }
 
 .hint {
+    font-size: 0.9em;
     color: #666;
-    font-size: 14px;
+    margin-top: 10px;
 }
 
 #product-info {
-    text-align: center;
+    display: none;
 }
 
-#product-name {
+#product-info h2 {
     font-size: 1.5em;
-    margin: 10px 0;
+    margin-bottom: 10px;
 }
 
-#bad-ingredients,
-#healthy-alternatives {
-    font-size: 1.2em;
-    color: #666;
+#product-info p {
+    font-size: 1em;
+    margin-bottom: 10px;
 }
 
 #scan-again {
-    margin-top: 20px;
-    padding: 10px 20px;
     background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 #scan-again:hover {
     background-color: #218838;
-}
-
-/* Mensagem de erro */
-#error-message {
-    background-color: rgba(255, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-}
-
-#error-message button {
-    background-color: white;
-    color: red;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#error-message button:hover {
-    background-color: #f2f2f2;
-}
-
-/* Overlay de carregamento */
-#loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    z-index: 100;
 }
