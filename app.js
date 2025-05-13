@@ -17,7 +17,7 @@ startBtn.addEventListener('click', async () => {
                 width: { ideal: 1280 }
             }
         });
-        
+
         video.srcObject = stream;
         scannerContainer.style.display = "block";
         startBtn.style.display = "none";
