@@ -1,7 +1,6 @@
 // Função para iniciar a câmera
 async function startCamera() {
   const video = document.getElementById('scanner-video');
-  const startBtn = document.getElementById('start-scanner');
   const cameraStatus = document.getElementById('camera-status');
 
   try {
@@ -37,8 +36,8 @@ async function startCamera() {
         });
     };
 
-    // Alterar estado do botão
-    startBtn.style.display = 'none';
+    // Exibir a câmera assim que ativada
+    video.style.display = 'block';
     cameraStatus.style.display = 'block';
 
   } catch (error) {
@@ -53,6 +52,3 @@ async function startCamera() {
 window.onload = () => {
   startCamera();
 };
-
-// Event listener para o botão "Iniciar Scanner"
-document.getElementById('start-scanner').addEventListener('click', startCamera);
