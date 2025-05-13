@@ -1,16 +1,10 @@
-// Banco de dados de produtos
+// Banco de dados de produtos (para testes locais)
 const produtos = [
     {
-        codigo: "7891000315507",
-        nome: "Biscoito Recheado Chocolate",
-        ingredientes_nocivos: "Açúcar, gordura vegetal hidrogenada, corante artificial",
-        alternativas: "Biscoito integral sem recheio, frutas desidratadas"
-    },
-    {
-        codigo: "7896051116011",
-        nome: "Refrigerante de Cola",
-        ingredientes_nocivos: "Açúcar, acidulante ácido fosfórico, corante caramelo IV",
-        alternativas: "Água com gás e limão, chá gelado natural"
+        codigo: "7891000315507", // Coca-Cola Zero (Exemplo)
+        nome: "Coca-Cola Zero",
+        ingredientes_nocivos: "Ácido fosfórico, adoçante (aspartame), corante caramelo IV, cafeína.",
+        alternativas: "Água com gás, chá gelado sem açúcar"
     }
 ];
 
@@ -38,10 +32,10 @@ startBtn.addEventListener('click', async () => {
         scannerContainer.style.display = "block";
         startBtn.style.display = "none";
         
-        // Simulação de leitura (substitua por um leitor real se necessário)
+        // Simulação de leitura de código de barras
         video.onclick = () => {
-            const codigoTeste = "7891000315507"; // Código de teste
-            mostrarProduto(codigoTeste);
+            const codigoTeste = "7891000315507"; // Código de teste (Coca-Cola Zero)
+            buscarProdutoNaAPI(codigoTeste);
         };
         
     } catch (err) {
@@ -58,19 +52,52 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
+// Buscar produto na Open Food Facts API
+async function buscarProdutoNaAPI(codigo) {
+    const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
+
+    try {
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+
+        if (dados.status === 1) {
+            const produto = dados.product;
+
+            if (!produto) {
+                alert("Produto não encontrado na base de dados.");
+                mostrarProduto(null);
+                return;
+            }
+
+            mostrarProduto({
+                nome: produto.product_name || "Nome não encontrado",
+                ingredientes_nocivos: produto.ingredients_text || "Sem informações sobre ingredientes",
+                alternativas: "Busque alternativas mais naturais"
+            });
+        } else {
+            alert("Produto não encontrado. Tente escanear outro código.");
+            mostrarProduto(null);
+        }
+    } catch (erro) {
+        console.error("Erro ao buscar produto na API:", erro);
+        alert("Erro ao buscar informações do produto.");
+        mostrarProduto(null);
+    }
+}
+
 // Mostrar informações do produto
-function mostrarProduto(codigo) {
-    const produto = produtos.find(p => p.codigo === codigo);
-    
+function mostrarProduto(produto) {
     if (produto) {
         productName.textContent = produto.nome;
         badIngredients.textContent = produto.ingredientes_nocivos;
         healthyAlternatives.textContent = produto.alternativas;
-        
+
         scannerContainer.style.display = "none";
         productInfo.style.display = "block";
     } else {
-        alert("Produto não cadastrado. Adicione manualmente.");
+        alert("Produto não encontrado. Tente escanear outro código.");
+        productInfo.style.display = "none";
+        startBtn.style.display = "block";
     }
 }
 
@@ -78,4 +105,5 @@ function mostrarProduto(codigo) {
 scanAgainBtn.addEventListener('click', () => {
     productInfo.style.display = "none";
     scannerContainer.style.display = "block";
+    startBtn.style.display = "none";
 });
