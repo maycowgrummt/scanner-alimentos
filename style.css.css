@@ -60,13 +60,7 @@ button:hover {
     max-width: 400px;
     border: 2px solid #4CAF50;
     border-radius: 8px;
-    background: #000;
-}
-
-.hint {
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: 10px;
+    background: #000; /* Fundo preto para evitar "flashes" */
 }
 
 #product-info {
