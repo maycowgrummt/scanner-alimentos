@@ -2,25 +2,28 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner de Alimentos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>Scanner de Alimentos</h1>
+
     <div id="scanner-container">
-      <video id="scanner-video" autoplay playsinline muted></video>
-      <p id="camera-status">Aguardando câmera...</p>
+      <video id="scanner-video"></video>
+      <p id="camera-status" class="status">Iniciando câmera...</p>
     </div>
 
     <div id="result" style="display: none;">
-      <p><strong>Código de Barras:</strong> <span id="barcode"></span></p>
-      <button onclick="window.location.reload()">Escanear outro</button>
+      <p><strong>Código:</strong> <span id="barcode"></span></p>
+      <div id="product-info"></div>
     </div>
+
+    <div id="history" class="history-box"></div>
   </div>
 
-  <!-- QuaggaJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
   <script src="app.js"></script>
 </body>
