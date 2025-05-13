@@ -1,4 +1,4 @@
-// Banco de dados de exemplo
+// Banco de dados de produtos
 const produtos = [
     {
         codigo: "7891000315507",
@@ -24,45 +24,41 @@ const badIngredients = document.getElementById('bad-ingredients');
 const healthyAlternatives = document.getElementById('healthy-alternatives');
 const scanAgainBtn = document.getElementById('scan-again');
 
-// Função para iniciar a câmera
+// Iniciar câmera
 startBtn.addEventListener('click', async () => {
     try {
-        // Solicita acesso à câmera
         const stream = await navigator.mediaDevices.getUserMedia({ 
             video: {
-                facingMode: "environment", // Prioriza câmera traseira
+                facingMode: "environment",
                 width: { ideal: 1280 }
             }
         });
         
-        // Configura o vídeo
         video.srcObject = stream;
         scannerContainer.style.display = "block";
         startBtn.style.display = "none";
         
-        // Simulação de leitura (para teste)
+        // Simulação de leitura (substitua por um leitor real se necessário)
         video.onclick = () => {
-            const codigoTeste = "7891000315507"; // Simula um código lido
+            const codigoTeste = "7891000315507"; // Código de teste
             mostrarProduto(codigoTeste);
         };
         
     } catch (err) {
-        // Tratamento de erros
         let mensagem;
         if (err.name === "NotAllowedError") {
-            mensagem = "Permissão da câmera negada. Por favor, permita o acesso nas configurações do navegador.";
+            mensagem = "Permissão da câmera negada. Ative nas configurações do navegador.";
         } else if (err.name === "NotFoundError") {
             mensagem = "Nenhuma câmera encontrada.";
         } else {
             mensagem = `Erro: ${err.message}`;
         }
-        
         alert(mensagem);
-        console.error("Erro detalhado:", err);
+        console.error(err);
     }
 });
 
-// Função para mostrar informações do produto
+// Mostrar informações do produto
 function mostrarProduto(codigo) {
     const produto = produtos.find(p => p.codigo === codigo);
     
@@ -74,11 +70,11 @@ function mostrarProduto(codigo) {
         scannerContainer.style.display = "none";
         productInfo.style.display = "block";
     } else {
-        alert("Produto não cadastrado. Adicione manualmente ou tente outro.");
+        alert("Produto não cadastrado. Adicione manualmente.");
     }
 }
 
-// Botão "Escanear Novamente"
+// Reiniciar scanner
 scanAgainBtn.addEventListener('click', () => {
     productInfo.style.display = "none";
     scannerContainer.style.display = "block";
