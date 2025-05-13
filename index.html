@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Scanner Simples</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Food Scanner - Conscientização Alimentar</title>
     <link rel="stylesheet" href="styles.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>📷 Scanner de Produtos</h1>
-    <button id="start-scanner">Abrir Câmera</button>
-    <video id="scanner-video" muted playsinline></video>
-    <div id="product-info" style="display:none;"></div>
+    <div class="container">
+        <h1>🔍 Scanner de Alimentos Ultraprocessados</h1>
+        <p>Escaneie o código de barras para ver ingredientes nocivos e alternativas saudáveis.</p>
+        
+        <button id="start-scanner">▶️ Iniciar Scanner</button>
+        
+        <div id="scanner-container">
+            <video id="scanner-video" muted playsinline></video>
+            <p class="hint">Aponte para o código de barras do produto</p>
+        </div>
+        
+        <div id="product-info">
+            <h2 id="product-name"></h2>
+            <p><strong>⚠️ Ingredientes Nocivos:</strong> <span id="bad-ingredients"></span></p>
+            <p><strong>🍎 Alternativas Saudáveis:</strong> <span id="healthy-alternatives"></span></p>
+            <button id="scan-again">🔄 Escanear Outro</button>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
