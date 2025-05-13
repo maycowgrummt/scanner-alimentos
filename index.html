@@ -1,37 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner de Alimentos Compacto</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scanner de Alimentos</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Scanner de Alimentos</h1>
-        <p class="status-message">Posicione o código de barras na área destacada</p>
-        
-        <div class="scanner-wrapper">
-            <video id="scanner-video" playsinline muted autoplay></video>
-            <div class="scanner-frame"></div>
-        </div>
+  <div class="container">
+    <h1>Scanner de Alimentos</h1>
 
-        <div id="product-info">
-            <h2 id="product-name"></h2>
-            <div class="ingredient-section">
-                <h3>Ingredientes Nocivos</h3>
-                <p id="bad-ingredients"></p>
-            </div>
-            <div class="alternative-section">
-                <h3>Alternativas Saudáveis</h3>
-                <p id="healthy-alternatives"></p>
-            </div>
-            <button id="scan-again">Escanear Outro Produto</button>
-        </div>
+    <div class="scanner-section">
+      <video id="video" autoplay muted playsinline></video>
+      <button id="start-scan">Iniciar Scanner</button>
+      <p>Ou digite o código de barras:</p>
+      <input type="text" id="manual-input" placeholder="Digite o código de barras" />
+      <button id="search-btn">Buscar Produto</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    <script src="app.js"></script>
+    <div class="result" id="product-result" style="display: none;">
+      <h2 id="product-name"></h2>
+      <p><strong>Ingredientes:</strong> <span id="ingredients"></span></p>
+      <p><strong>Classificação:</strong> <span id="grade"></span></p>
+      <button id="new-scan">Escanear Outro</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
