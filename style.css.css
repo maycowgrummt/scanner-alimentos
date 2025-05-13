@@ -1,34 +1,23 @@
 body {
     font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
     text-align: center;
+    padding: 20px;
 }
 
 #scanner-video {
+    width: 100%;
+    max-width: 500px;
     border: 2px solid #4CAF50;
-    border-radius: 8px;
-    margin: 10px 0;
+    margin-top: 20px;
+    display: none; /* Inicialmente oculto */
 }
 
 button {
-    background-color: #4CAF50;
+    background: #4CAF50;
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
     font-size: 16px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-#product-info {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
 }
