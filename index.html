@@ -11,30 +11,21 @@
     <div class="container">
         <h1>Scanner de Alimentos</h1>
         
-        <!-- Container do Scanner -->
         <div id="scanner-container">
             <video id="scanner-video" playsinline muted autoplay></video>
             <button id="start-scanner">Iniciar Scanner</button>
             <p class="hint">Toque no botão para iniciar a leitura do código de barras do produto.</p>
         </div>
 
-        <!-- Campo de entrada manual para código de barras -->
-        <div id="manual-input" style="margin-top: 20px;">
-            <input type="text" id="barcode-input" placeholder="Digite o código de barras" />
-            <button id="search-product">Buscar Produto</button>
-        </div>
-
-        <!-- Informações do produto -->
         <div id="product-info" style="display: none;">
             <h2 id="product-name">Nome do Produto</h2>
             <p id="bad-ingredients">Ingredientes Nocivos</p>
             <p id="healthy-alternatives">Alternativas Saudáveis</p>
             <button id="scan-again">Escanear Novamente</button>
         </div>
-        
-        <!-- Overlay de Carregamento -->
+
         <div id="loading-overlay" style="display: none;">
-            <p>Carregando...</p>
+            <span>Carregando...</span>
         </div>
     </div>
 
