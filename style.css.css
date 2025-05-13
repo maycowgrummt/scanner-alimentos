@@ -110,9 +110,10 @@ header h1 i {
 #scanner-video {
     width: 100%;
     max-width: 500px;
-    border-radius: var(--border-radius);
+    border-radius: 10px;
     background: #000;
     display: none;
+    transform: rotateY(180deg); /* Espelhar a imagem para parecer mais natural */
 }
 
 .hint {
