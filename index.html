@@ -10,26 +10,32 @@
 <body>
     <div class="container">
         <h1>Scanner de Alimentos</h1>
-
+        
+        <!-- Container do Scanner -->
         <div id="scanner-container">
             <video id="scanner-video" playsinline muted autoplay></video>
-            <button id="start-scanner">📷 Iniciar Scanner</button>
+            <button id="start-scanner">Iniciar Scanner</button>
             <p class="hint">Toque no botão para iniciar a leitura do código de barras do produto.</p>
         </div>
 
-        <div id="loading-overlay">
-            <div class="loader"></div>
-            <p>Carregando...</p>
+        <!-- Campo de entrada manual -->
+        <div id="manual-input">
+            <input type="text" id="barcode-input" placeholder="Digite o código de barras" />
+            <button id="search-product">Buscar Produto</button>
         </div>
 
+        <!-- Informações do produto -->
         <div id="product-info" style="display: none;">
             <h2 id="product-name">Nome do Produto</h2>
-            <p id="bad-ingredients"></p>
-            <p id="healthy-alternatives"></p>
-            <button id="scan-again">🔄 Escanear Novamente</button>
+            <p id="bad-ingredients">Ingredientes Nocivos</p>
+            <p id="healthy-alternatives">Alternativas Saudáveis</p>
+            <button id="scan-again">Escanear Novamente</button>
         </div>
-
-        <div id="history" class="history"></div>
+        
+        <!-- Overlay de Carregamento -->
+        <div id="loading-overlay" style="display: none;">
+            <p>Carregando...</p>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
