@@ -6,8 +6,8 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
     color: #333;
     line-height: 1.6;
     padding: 20px;
@@ -16,63 +16,102 @@ body {
 .container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 30px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
 h1 {
-    text-align: center;
+    font-size: 2rem;
     color: #4CAF50;
     margin-bottom: 20px;
+}
+
+h2 {
+    color: #4CAF50;
+    margin-bottom: 10px;
 }
 
 button {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    width: 100%;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 1.2rem;
     cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
     margin-top: 20px;
 }
 
 button:hover {
     background-color: #45a049;
+    transform: scale(1.05);
+}
+
+button:active {
+    background-color: #388E3C;
+    transform: scale(0.98);
 }
 
 #scanner-container {
-    text-align: center;
-    margin-top: 30px;
+    display: block;
 }
 
 #scanner-video {
     width: 100%;
     max-width: 500px;
     border: 2px solid #4CAF50;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #000;
 }
 
+.hint {
+    font-size: 1rem;
+    color: #888;
+    margin-top: 10px;
+}
+
 #product-info {
-    margin-top: 20px;
     background: #e9f7e9;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 #product-name {
-    color: #2E7D32;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+#bad-ingredients, #healthy-alternatives {
+    font-size: 1.1rem;
+    margin-top: 10px;
+    color: #555;
 }
 
 #scan-again {
     background-color: #2196F3;
+    margin-top: 20px;
 }
 
 #scan-again:hover {
     background-color: #0b7dda;
+}
+
+/* Animação para o vídeo */
+#scanner-video {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
