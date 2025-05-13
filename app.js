@@ -1,13 +1,3 @@
-// Banco de dados de produtos (para testes locais)
-const produtos = [
-    {
-        codigo: "7891000315507", // Coca-Cola Zero (Exemplo)
-        nome: "Coca-Cola Zero",
-        ingredientes_nocivos: "Ácido fosfórico, adoçante (aspartame), corante caramelo IV, cafeína.",
-        alternativas: "Água com gás, chá gelado sem açúcar"
-    }
-];
-
 // Elementos da página
 const startBtn = document.getElementById('start-scanner');
 const video = document.getElementById('scanner-video');
@@ -18,7 +8,7 @@ const badIngredients = document.getElementById('bad-ingredients');
 const healthyAlternatives = document.getElementById('healthy-alternatives');
 const scanAgainBtn = document.getElementById('scan-again');
 
-// Iniciar câmera
+// Função para iniciar a câmera
 startBtn.addEventListener('click', async () => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -31,12 +21,30 @@ startBtn.addEventListener('click', async () => {
         video.srcObject = stream;
         scannerContainer.style.display = "block";
         startBtn.style.display = "none";
-        
-        // Simulação de leitura de código de barras
-        video.onclick = () => {
-            const codigoTeste = "7891000315507"; // Código de teste (Coca-Cola Zero)
-            buscarProdutoNaAPI(codigoTeste);
-        };
+
+        // Usando o QuaggaJS para ler o código de barras da câmera
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: video
+            },
+            decoder: {
+                readers: ["ean_reader", "upc_reader"]  // Configura para ler códigos EAN e UPC
+            }
+        }, function(err) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            Quagga.start();
+        });
+
+        // Quando o Quagga lê o código, chama a função para mostrar o produto
+        Quagga.onDetected(function(result) {
+            const codigo = result.codeResult.code;
+            mostrarProduto(codigo);
+        });
         
     } catch (err) {
         let mensagem;
@@ -52,52 +60,27 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
-// Buscar produto na Open Food Facts API
-async function buscarProdutoNaAPI(codigo) {
-    const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
-
+// Função para buscar informações sobre o produto na Open Food Facts
+async function mostrarProduto(codigo) {
+    const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
     try {
         const resposta = await fetch(url);
         const dados = await resposta.json();
-
-        if (dados.status === 1) {
+        
+        if (dados.product) {
             const produto = dados.product;
-
-            if (!produto) {
-                alert("Produto não encontrado na base de dados.");
-                mostrarProduto(null);
-                return;
-            }
-
-            mostrarProduto({
-                nome: produto.product_name || "Nome não encontrado",
-                ingredientes_nocivos: produto.ingredients_text || "Sem informações sobre ingredientes",
-                alternativas: "Busque alternativas mais naturais"
-            });
+            productName.textContent = produto.product_name || "Produto desconhecido";
+            badIngredients.textContent = produto.ingredients_text || "Sem informações sobre ingredientes.";
+            healthyAlternatives.textContent = "Substitua por alimentos naturais e menos processados.";
+            
+            scannerContainer.style.display = "none";
+            productInfo.style.display = "block";
         } else {
-            alert("Produto não encontrado. Tente escanear outro código.");
-            mostrarProduto(null);
+            alert("Produto não encontrado ou dados incompletos.");
         }
     } catch (erro) {
-        console.error("Erro ao buscar produto na API:", erro);
-        alert("Erro ao buscar informações do produto.");
-        mostrarProduto(null);
-    }
-}
-
-// Mostrar informações do produto
-function mostrarProduto(produto) {
-    if (produto) {
-        productName.textContent = produto.nome;
-        badIngredients.textContent = produto.ingredientes_nocivos;
-        healthyAlternatives.textContent = produto.alternativas;
-
-        scannerContainer.style.display = "none";
-        productInfo.style.display = "block";
-    } else {
-        alert("Produto não encontrado. Tente escanear outro código.");
-        productInfo.style.display = "none";
-        startBtn.style.display = "block";
+        console.error("Erro ao buscar produto:", erro);
+        alert("Erro ao consultar produto.");
     }
 }
 
@@ -105,5 +88,4 @@ function mostrarProduto(produto) {
 scanAgainBtn.addEventListener('click', () => {
     productInfo.style.display = "none";
     scannerContainer.style.display = "block";
-    startBtn.style.display = "none";
 });
