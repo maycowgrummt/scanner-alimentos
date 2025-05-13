@@ -3,34 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scanner de Alimentos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>NutriScan - Scanner de Alimentos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="style.css">
-  <!-- Ícones Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1><i class="fas fa-camera-retro"></i> Scanner de Alimentos</h1>
+    <header>
+      <h1><i class="fas fa-barcode"></i> NutriScan</h1>
+      <p class="subtitle">Escaneie o código de barras para verificar a qualidade do alimento</p>
+    </header>
 
-    <!-- Status da Câmera -->
-    <div id="camera-status" style="display: none; padding: 10px; text-align: center;"></div>
+    <div class="scanner-section">
+      <div id="camera-status" class="status-box">
+        <i class="fas fa-camera"></i> <span>Preparando câmera...</span>
+      </div>
 
-    <!-- Contêiner da Câmera -->
-    <div id="scanner-container">
-      <video id="scanner-video" playsinline muted autoplay style="display: none;"></video>
+      <div id="scanner-container">
+        <video id="scanner-video" playsinline muted autoplay></video>
+        <div class="scanner-overlay"></div>
+        <div class="scan-line"></div>
+      </div>
+
+      <button id="toggle-camera" class="btn">
+        <i class="fas fa-sync-alt"></i> Alternar Câmera
+      </button>
     </div>
 
-    <!-- Exibição das informações do produto -->
-    <div id="product-info" style="display: none;">
-      <h2 id="product-name">Nome do Produto</h2>
-      <p id="bad-ingredients">Ingredientes Nocivos: <span id="bad-ingredients-list"></span></p>
-      <p id="healthy-alternatives">Alternativas Saudáveis: <span id="healthy-alternatives-list"></span></p>
-      <button id="scan-again">Escanear Novamente</button>
+    <div id="product-info" class="product-card hidden">
+      <div class="product-header">
+        <h2 id="product-name">Nome do Produto</h2>
+        <div id="health-indicator" class="health-indicator unknown">
+          <i class="fas fa-question-circle"></i> Qualidade desconhecida
+        </div>
+      </div>
+      
+      <div class="info-section">
+        <h3><i class="fas fa-list-ol"></i> Ingredientes</h3>
+        <p id="ingredients-list">Carregando informações...</p>
+      </div>
+      
+      <div class="info-section warning">
+        <h3><i class="fas fa-exclamation-triangle"></i> Ingredientes Nocivos</h3>
+        <p id="bad-ingredients">Nenhum ingrediente nocivo detectado.</p>
+      </div>
+      
+      <div class="info-section success">
+        <h3><i class="fas fa-heart"></i> Alternativas Saudáveis</h3>
+        <p id="healthy-alternatives">Carregando sugestões...</p>
+      </div>
+      
+      <div class="action-buttons">
+        <button id="scan-again" class="btn primary">
+          <i class="fas fa-barcode"></i> Escanear Novamente
+        </button>
+        <button id="save-product" class="btn secondary">
+          <i class="fas fa-save"></i> Salvar Produto
+        </button>
+      </div>
     </div>
 
-    <div id="no-camera-message" style="display: none; text-align: center; color: #e74c3c;">
-      <p><i class="fas fa-exclamation-triangle"></i> Não foi possível acessar a câmera. Verifique as permissões.</p>
+    <div id="history-section" class="history-section hidden">
+      <h3><i class="fas fa-history"></i> Histórico de Scans</h3>
+      <ul id="history-list"></ul>
     </div>
   </div>
 
