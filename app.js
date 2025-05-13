@@ -1,3 +1,13 @@
+// Banco de dados de produtos (para testes locais)
+const produtos = [
+    {
+        codigo: "7891000315507", // Coca-Cola Zero (Exemplo)
+        nome: "Coca-Cola Zero",
+        ingredientes_nocivos: "Ácido fosfórico, adoçante (aspartame), corante caramelo IV, cafeína.",
+        alternativas: "Água com gás, chá gelado sem açúcar"
+    }
+];
+
 // Elementos da página
 const startBtn = document.getElementById('start-scanner');
 const video = document.getElementById('scanner-video');
@@ -8,7 +18,7 @@ const badIngredients = document.getElementById('bad-ingredients');
 const healthyAlternatives = document.getElementById('healthy-alternatives');
 const scanAgainBtn = document.getElementById('scan-again');
 
-// Função para iniciar a câmera
+// Iniciar câmera
 startBtn.addEventListener('click', async () => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -22,10 +32,10 @@ startBtn.addEventListener('click', async () => {
         scannerContainer.style.display = "block";
         startBtn.style.display = "none";
         
-        // Simulação de leitura (substitua por um leitor real se necessário)
+        // Simulação de leitura de código de barras
         video.onclick = () => {
-            const codigoTeste = "7891000315507"; // Código de teste
-            mostrarProduto(codigoTeste);
+            const codigoTeste = "7891000315507"; // Código de teste (Coca-Cola Zero)
+            buscarProdutoNaAPI(codigoTeste);
         };
         
     } catch (err) {
@@ -42,27 +52,52 @@ startBtn.addEventListener('click', async () => {
     }
 });
 
-// Função para buscar informações sobre o produto na Open Food Facts
-async function mostrarProduto(codigo) {
-    const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
+// Buscar produto na Open Food Facts API
+async function buscarProdutoNaAPI(codigo) {
+    const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
+
     try {
         const resposta = await fetch(url);
         const dados = await resposta.json();
-        
-        if (dados.product) {
+
+        if (dados.status === 1) {
             const produto = dados.product;
-            productName.textContent = produto.product_name || "Produto desconhecido";
-            badIngredients.textContent = produto.ingredients_text || "Sem informações sobre ingredientes.";
-            healthyAlternatives.textContent = "Substitua por alimentos naturais e menos processados.";
-            
-            scannerContainer.style.display = "none";
-            productInfo.style.display = "block";
+
+            if (!produto) {
+                alert("Produto não encontrado na base de dados.");
+                mostrarProduto(null);
+                return;
+            }
+
+            mostrarProduto({
+                nome: produto.product_name || "Nome não encontrado",
+                ingredientes_nocivos: produto.ingredients_text || "Sem informações sobre ingredientes",
+                alternativas: "Busque alternativas mais naturais"
+            });
         } else {
-            alert("Produto não encontrado ou dados incompletos.");
+            alert("Produto não encontrado. Tente escanear outro código.");
+            mostrarProduto(null);
         }
     } catch (erro) {
-        console.error("Erro ao buscar produto:", erro);
-        alert("Erro ao consultar produto.");
+        console.error("Erro ao buscar produto na API:", erro);
+        alert("Erro ao buscar informações do produto.");
+        mostrarProduto(null);
+    }
+}
+
+// Mostrar informações do produto
+function mostrarProduto(produto) {
+    if (produto) {
+        productName.textContent = produto.nome;
+        badIngredients.textContent = produto.ingredientes_nocivos;
+        healthyAlternatives.textContent = produto.alternativas;
+
+        scannerContainer.style.display = "none";
+        productInfo.style.display = "block";
+    } else {
+        alert("Produto não encontrado. Tente escanear outro código.");
+        productInfo.style.display = "none";
+        startBtn.style.display = "block";
     }
 }
 
@@ -70,4 +105,5 @@ async function mostrarProduto(codigo) {
 scanAgainBtn.addEventListener('click', () => {
     productInfo.style.display = "none";
     scannerContainer.style.display = "block";
+    startBtn.style.display = "none";
 });
