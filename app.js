@@ -73,3 +73,22 @@ document.getElementById('scan-again').addEventListener('click', () => {
 
 // Limpar ao sair
 window.addEventListener('beforeunload', stopCamera);
+// Debug: Verificar status da câmera
+setInterval(() => {
+    console.log("Status do vídeo:", {
+        readyState: video.readyState,
+        paused: video.paused,
+        error: video.error,
+        srcObject: !!video.srcObject
+    });
+    
+    if (video.srcObject) {
+        console.log("Tracks ativas:", 
+            video.srcObject.getTracks().map(t => ({
+                kind: t.kind,
+                readyState: t.readyState,
+                enabled: t.enabled
+            }))
+        );
+    }
+}, 3000);
