@@ -1,54 +1,87 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f8f8f8;
+/* Reset básico */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
-.container {
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+  padding: 20px;
+}
+
+.app-container {
   max-width: 480px;
   margin: auto;
-  padding: 20px;
-  text-align: center;
 }
 
 h1 {
-  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #007BFF;
 }
 
-.scanner-section {
-  margin: 20px 0;
+.card {
+  background-color: #fff;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  text-align: center;
 }
 
 video {
   width: 100%;
-  max-height: 240px;
-  border: 2px solid #ccc;
+  border-radius: 10px;
   margin-bottom: 10px;
+  display: none;
 }
 
 input[type="text"] {
-  width: 80%;
-  padding: 10px;
-  margin: 10px 0;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 button {
-  padding: 10px 15px;
-  margin: 5px;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
   background-color: #007BFF;
-  color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  color: white;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
-.result {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
+.result h2 {
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+  color: #222;
+}
+
+.result p {
+  margin: 5px 0;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  button {
+    font-size: 15px;
+  }
 }
