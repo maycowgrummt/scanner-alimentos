@@ -1,35 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scanner de Alimentos</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="app-container">
-    <h1>📦 Scanner de Alimentos</h1>
-
-    <div id="scanner" class="scanner-box">
-      <p>📷 Aponte a câmera para o código de barras</p>
-    </div>
-
-    <div class="manual-search">
-      <p>🔍 Ou digite o código de barras:</p>
-      <input type="text" id="manual-input" placeholder="Ex: 7891000244351" />
-      <button id="search-btn">Buscar Produto</button>
-    </div>
-
-    <div class="card result" id="product-result" style="display: none;">
-      <h2 id="product-name"></h2>
-      <p><strong>Ingredientes:</strong> <span id="ingredients"></span></p>
-      <p><strong>Classificação Nutricional:</strong> <span id="grade"></span></p>
-      <button id="new-scan">🔄 Escanear Outro</button>
-    </div>
+  <div class="container">
+    <h1>Scanner de Alimentos</h1>
+    <video id="scanner-video" autoplay playsinline muted></video>
+    <p id="camera-status">Aguardando câmera...</p>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
