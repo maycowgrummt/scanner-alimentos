@@ -17,23 +17,30 @@ h1 {
   margin-bottom: 1rem;
 }
 
-.card {
+.scanner-box {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+#scanner video, canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.manual-search {
   background: #fff;
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   margin-bottom: 1rem;
-}
-
-.card.camera {
-  position: relative;
-  overflow: hidden;
-}
-
-video {
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
 }
 
 input[type="text"] {
