@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FoodScan - Scanner de Alimentos</title>
+    <title>Scanner Automático de Alimentos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Scanner de Alimentos</h1>
+        <p class="loading-message">Iniciando câmera...</p>
         
         <div id="scanner-container">
             <div class="scanner-overlay">
                 <div class="scanner-frame"></div>
             </div>
-            <video id="scanner-video" playsinline muted></video>
-            <button id="start-scanner">Iniciar Scanner</button>
+            <video id="scanner-video" playsinline muted autoplay></video>
         </div>
 
         <div id="product-info">
-            <h2 id="product-name">Nome do Produto</h2>
-            <div class="ingredient-info">
+            <h2 id="product-name"></h2>
+            <div class="ingredient-section">
                 <h3>Ingredientes Nocivos</h3>
                 <p id="bad-ingredients"></p>
             </div>
-            <div class="alternative-info">
+            <div class="alternative-section">
                 <h3>Alternativas Saudáveis</h3>
                 <p id="healthy-alternatives"></p>
             </div>
