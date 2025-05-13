@@ -3,26 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner de Alimentos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>FoodScan - Conscientização Alimentar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Scanner de Alimentos</h1>
+        <header>
+            <h1><i class="fas fa-barcode"></i> FoodScan</h1>
+            <p class="subtitle">Descubra o que realmente está em seus alimentos</p>
+        </header>
         
-        <div id="scanner-container">
-            <video id="scanner-video" autoplay></video>
-            <button id="start-scanner">Iniciar Scanner</button>
-            <p class="hint">Toque no botão para iniciar a leitura do código de barras do produto.</p>
+        <div class="scanner-section">
+            <div id="scanner-container">
+                <div class="scanner-overlay">
+                    <div class="scanner-frame"></div>
+                </div>
+                <video id="scanner-video" playsinline muted></video>
+                <button id="start-scanner" class="primary-btn">
+                    <i class="fas fa-camera"></i> Iniciar Scanner
+                </button>
+                <p class="hint">Posicione o código de barras dentro do quadro</p>
+            </div>
+
+            <div id="product-info">
+                <div class="product-card">
+                    <h2 id="product-name">Nome do Produto</h2>
+                    <div class="info-section warning">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Ingredientes Nocivos</h3>
+                        <p id="bad-ingredients">Carregando informações...</p>
+                    </div>
+                    <div class="info-section success">
+                        <h3><i class="fas fa-heart"></i> Alternativas Saudáveis</h3>
+                        <p id="healthy-alternatives">Carregando sugestões...</p>
+                    </div>
+                    <button id="scan-again" class="secondary-btn">
+                        <i class="fas fa-redo"></i> Escanear Novamente
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div id="product-info" style="display: none;">
-            <h2 id="product-name">Nome do Produto</h2>
-            <p id="bad-ingredients">Ingredientes Nocivos</p>
-            <p id="healthy-alternatives">Alternativas Saudáveis</p>
-            <button id="scan-again">Escanear Novamente</button>
-        </div>
+        <footer>
+            <p>Projeto de conscientização alimentar - © 2023</p>
+        </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
