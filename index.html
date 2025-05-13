@@ -1,38 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner de Alimentos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://unpkg.com/feather-icons"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1><i data-feather="camera"></i> Scanner de Alimentos</h1>
+        <h1>Scanner de Alimentos</h1>
 
         <div id="scanner-container">
-            <div class="video-wrapper">
-                <video id="scanner-video" playsinline muted autoplay></video>
-                <div id="loading-overlay" class="loading">Iniciando câmera...</div>
-            </div>
-
-            <button id="start-scanner"><i data-feather="play-circle"></i> Iniciar Scanner</button>
-            <p class="hint">Toque no botão para iniciar a leitura do código de barras do produto.</p>
+            <video id="scanner-video" playsinline muted autoplay></video>
+            <button id="start-scanner">📷 Iniciar Scanner</button>
+            <p class="hint">Toque no botão acima para escanear o código de barras do produto.</p>
         </div>
 
         <div id="product-info" style="display: none;">
-            <h2><i data-feather="info"></i> Detalhes do Produto</h2>
-            <p id="product-name"><strong>Nome do Produto:</strong> Produto Exemplo</p>
-            <p id="bad-ingredients"><strong>Ingredientes Nocivos:</strong> -</p>
-            <p id="healthy-alternatives"><strong>Alternativas Saudáveis:</strong> -</p>
-            <button id="scan-again"><i data-feather="refresh-cw"></i> Escanear Novamente</button>
+            <h2 id="product-name">Nome do Produto</h2>
+            <p id="bad-ingredients">Ingredientes Nocivos</p>
+            <p id="healthy-alternatives">Alternativas Saudáveis</p>
+            <button id="scan-again">🔄 Escanear Novamente</button>
         </div>
+    </div>
+
+    <div id="loading-overlay" style="display: none;">
+        <div class="loader"></div>
+        <p>Carregando...</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script src="app.js"></script>
-    <script>feather.replace()</script>
 </body>
 </html>
