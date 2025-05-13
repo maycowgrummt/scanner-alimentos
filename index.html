@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner de Alimentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Scanner de Alimentos</h1>
-
-        <!-- Div para o scanner de código de barras -->
+        
         <div id="scanner-container">
             <video id="scanner-video" autoplay></video>
             <button id="start-scanner">Iniciar Scanner</button>
+            <p class="hint">Toque no botão para iniciar a leitura do código de barras do produto.</p>
         </div>
 
-        <!-- Div para mostrar as informações do produto -->
         <div id="product-info" style="display: none;">
             <h2 id="product-name">Nome do Produto</h2>
             <p id="bad-ingredients">Ingredientes Nocivos</p>
