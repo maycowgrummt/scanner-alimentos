@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scanner de Alimentos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Scanner de Alimentos</h1>
 
+    <!-- Status da Câmera -->
+    <div id="camera-status" style="display: none; padding: 10px; text-align: center;"></div>
+
     <div id="scanner-container">
-      <video id="scanner-video"></video>
-      <p id="camera-status" class="status">Iniciando câmera...</p>
+      <video id="scanner-video" playsinline muted autoplay style="display: none;"></video>
     </div>
 
-    <div id="result" style="display: none;">
-      <p><strong>Código:</strong> <span id="barcode"></span></p>
-      <div id="product-info"></div>
+    <div id="product-info" style="display: none;">
+      <h2 id="product-name">Nome do Produto</h2>
+      <p id="bad-ingredients">Ingredientes Nocivos</p>
+      <p id="healthy-alternatives">Alternativas Saudáveis</p>
+      <button id="scan-again">Escanear Novamente</button>
     </div>
-
-    <div id="history" class="history-box"></div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
