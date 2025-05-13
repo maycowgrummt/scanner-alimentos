@@ -56,16 +56,9 @@
     }
 
     #scanner-container {
-      visibility: hidden;
-      height: 0;
-      overflow: hidden;
+      display: none;
       margin: 20px 0;
       text-align: center;
-    }
-
-    #scanner-container.active {
-      visibility: visible;
-      height: auto;
     }
 
     #scanner-video {
@@ -76,8 +69,10 @@
       background: #000;
     }
 
-    video::-webkit-media-controls {
-      display: none !important;
+    .hint {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 10px;
     }
 
     #product-info {
@@ -106,11 +101,16 @@
 <body>
   <div class="container">
     <h1>Scanner de Alimentos</h1>
-    <p>Escaneie o código de barras para ver informações sobre ingredientes nocivos e alternativas saudáveis.</p>
+    <p>Toque em "Iniciar Scanner" para identificar ingredientes nocivos em produtos.</p>
     <button id="start-scanner">INICIAR SCANNER</button>
 
     <div id="scanner-container">
-      <video id="scanner-video" autoplay playsinline muted></video>
+      <video 
+        id="scanner-video" 
+        autoplay 
+        playsinline 
+        muted
+      ></video>
       <p class="hint">Toque no vídeo para simular leitura (modo de teste).</p>
     </div>
 
@@ -147,38 +147,37 @@
     const healthyAlternatives = document.getElementById('healthy-alternatives');
     const scanAgainBtn = document.getElementById('scan-again');
 
-    startBtn.addEventListener('click', () => {
-      scannerContainer.classList.add('active'); // Torna o vídeo visível
+    startBtn.addEventListener('click', async () => {
+      scannerContainer.style.display = "block";
 
-      setTimeout(async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: "environment"
-            }
-          });
-
-          video.srcObject = stream;
-          startBtn.style.display = "none";
-
-          // Simulação de leitura
-          video.onclick = () => {
-            const codigoTeste = "7891000315507"; // Código de teste
-            mostrarProduto(codigoTeste);
-          };
-        } catch (err) {
-          let mensagem;
-          if (err.name === "NotAllowedError") {
-            mensagem = "Permissão da câmera negada. Ative nas configurações do navegador.";
-          } else if (err.name === "NotFoundError") {
-            mensagem = "Nenhuma câmera encontrada.";
-          } else {
-            mensagem = `Erro: ${err.message}`;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment"
           }
-          alert(mensagem);
-          console.error(err);
+        });
+
+        video.srcObject = stream;
+        startBtn.style.display = "none";
+
+        // Simulação de leitura — substitua por leitura real se necessário
+        video.onclick = () => {
+          const codigoTeste = "7891000315507";
+          mostrarProduto(codigoTeste);
+        };
+
+      } catch (err) {
+        let mensagem;
+        if (err.name === "NotAllowedError") {
+          mensagem = "Permissão da câmera negada. Ative nas configurações do navegador.";
+        } else if (err.name === "NotFoundError") {
+          mensagem = "Nenhuma câmera encontrada.";
+        } else {
+          mensagem = `Erro: ${err.message}`;
         }
-      }, 300); // Pequeno delay para o Safari não bugar
+        alert(mensagem);
+        console.error(err);
+      }
     });
 
     function mostrarProduto(codigo) {
@@ -189,7 +188,7 @@
         badIngredients.textContent = produto.ingredientes_nocivos;
         healthyAlternatives.textContent = produto.alternativas;
 
-        scannerContainer.classList.remove('active');
+        scannerContainer.style.display = "none";
         productInfo.style.display = "block";
       } else {
         alert("Produto não cadastrado. Adicione manualmente.");
@@ -198,7 +197,7 @@
 
     scanAgainBtn.addEventListener('click', () => {
       productInfo.style.display = "none";
-      scannerContainer.classList.add('active');
+      scannerContainer.style.display = "block";
     });
   </script>
 </body>
