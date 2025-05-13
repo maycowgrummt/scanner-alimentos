@@ -1,4 +1,4 @@
-// Função para buscar informações do produto usando a API do Open Food Facts
+// Função para buscar informações do produto utilizando a Open Food Facts API
 async function fetchProductInfo(code) {
     // Exibe o overlay de carregamento enquanto faz a requisição
     document.getElementById("loading-overlay").style.display = "flex";
@@ -11,22 +11,23 @@ async function fetchProductInfo(code) {
     }
 
     console.log("Buscando informações para o código:", code);
-    
-    // Exemplo de URL para API do Open Food Facts
-    const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${code}.json`;
 
     try {
-        const response = await fetch(apiUrl);
+        // Fazendo a requisição à Open Food Facts API
+        const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+
+        // Verificando se o produto foi encontrado
         const data = await response.json();
 
-        // Quando o produto é encontrado, exibe as informações
-        if (data.product) {
+        if (data.status === 1) {
             const product = data.product;
-            document.getElementById('product-name').textContent = product.product_name || "Produto não encontrado";
-            document.getElementById('bad-ingredients').textContent = product.ingredients_text || "Ingredientes não disponíveis";
-            document.getElementById('healthy-alternatives').textContent = "Alternativas saudáveis ainda não implementadas.";
 
-            // Esconde o campo de digitação e mostra as informações
+            // Exibe as informações do produto
+            document.getElementById('product-name').textContent = product.product_name || "Produto não encontrado";
+            document.getElementById('bad-ingredients').textContent = getBadIngredients(product) || "Ingredientes não disponíveis";
+            document.getElementById('healthy-alternatives').textContent = getHealthyAlternatives(product) || "Alternativas saudáveis não disponíveis.";
+
+            // Esconde o campo de escaneamento e mostra as informações
             document.getElementById("scanner-container").style.display = "none";
             document.getElementById("product-info").style.display = "block";
         } else {
@@ -41,70 +42,37 @@ async function fetchProductInfo(code) {
     }
 }
 
-// Exibe a mensagem de erro de forma controlada
+// Função para exibir erro
 function showError(message) {
-    const errorMessage = document.getElementById("error-message");
-    errorMessage.textContent = message;
-    errorMessage.style.display = "block";
+    alert(message);
 }
 
-// Esconde a mensagem de erro
-document.getElementById('close-error').addEventListener('click', function() {
-    document.getElementById("error-message").style.display = "none";
-});
-
-// Função para iniciar a câmera e o scanner
-function startCamera() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then((stream) => {
-                const video = document.getElementById('scanner-video');
-                video.srcObject = stream;
-
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: video
-                    },
-                    decoder: {
-                        readers: ["ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"]
-                    }
-                }, function(err) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    Quagga.start();
-                });
-
-                // Quando o código de barras é detectado
-                Quagga.onDetected(function(result) {
-                    const barcode = result.codeResult.code;
-                    console.log("Código de barras detectado:", barcode);
-                    fetchProductInfo(barcode); // Busca o produto
-                });
-            })
-            .catch(function(err) {
-                console.log("Erro ao acessar a câmera:", err);
-            });
+// Função para obter ingredientes prejudiciais (exemplo básico)
+function getBadIngredients(product) {
+    if (product.ingredients_text) {
+        const ingredients = product.ingredients_text.split(", ");
+        return ingredients.filter(ingredient => {
+            // Defina seus critérios de ingredientes nocivos aqui
+            return ingredient.toLowerCase().includes("adoçante") || ingredient.toLowerCase().includes("conservante");
+        }).join(", ");
     }
+    return null;
 }
 
-// Event listener para o botão de iniciar scanner
-document.getElementById("start-scanner").addEventListener('click', function() {
-    startCamera();
-    document.getElementById('scanner-container').style.display = 'none';
-});
+// Função para sugerir alternativas saudáveis (exemplo básico)
+function getHealthyAlternatives(product) {
+    // Aqui você pode melhorar com base em mais lógica ou até mesmo integrar uma API de alternativas
+    if (product.categories) {
+        const categories = product.categories.split(", ");
+        return categories.includes("bebidas") ? "Água com gás, Chá verde" : "Frutas frescas, Barras de cereal";
+    }
+    return null;
+}
 
-// Função para limpar e voltar ao início
-document.getElementById('scan-again').addEventListener('click', function() {
-    document.getElementById('product-info').style.display = 'none';
-    document.getElementById('scanner-container').style.display = 'block';
-    startCamera();
-});
-
-// Iniciar scanner automaticamente quando a página carregar
-window.addEventListener('load', function() {
-    startCamera();
+// Função para lidar com o envio manual do código de barras
+document.getElementById('manual-input').addEventListener('input', (event) => {
+    const code = event.target.value;
+    if (code.length >= 12) {
+        fetchProductInfo(code);
+    }
 });
