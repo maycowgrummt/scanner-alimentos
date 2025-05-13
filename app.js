@@ -25,13 +25,13 @@ async function startCamera() {
         video.srcObject = stream;
 
         // 4. Esperar o vídeo estar pronto
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
             video.onloadedmetadata = () => {
                 video.play()
                     .then(resolve)
-                    .catch(err => {
-                        console.error("Erro ao reproduzir vídeo:", err);
-                        alert("Toque na tela para ativar a câmera");
+                    .catch((err) => {
+                        console.error('Erro ao iniciar o vídeo:', err);
+                        reject('Erro ao iniciar o vídeo');
                     });
             };
         });
@@ -39,20 +39,21 @@ async function startCamera() {
         // 5. Mostrar feedback visual
         video.style.display = 'block';
         startBtn.style.display = 'none';
+        scannerContainer.style.display = 'block'; // Mostrar o container de vídeo
         console.log("Câmera iniciada com sucesso!");
     } catch (error) {
         console.error("Erro ao acessar a câmera:", error);
-        alert(`Erro: ${error.message}`);
+        alert(`Erro ao acessar a câmera: ${error.message}`);
     }
 }
 
-// Event listener para o botão
+// Event listener para o botão "Iniciar Scanner"
 startBtn.addEventListener('click', startCamera);
 
 // Função para parar a câmera
 function stopCamera() {
     if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject.getTracks().forEach((track) => track.stop());
         video.srcObject = null;
     }
     video.style.display = 'none';
@@ -69,7 +70,7 @@ document.getElementById('scan-again').addEventListener('click', () => {
 // Limpar ao sair
 window.addEventListener('beforeunload', stopCamera);
 
-// Função de leitura do código de barras usando Quagga
+// Função para ler o código de barras (com Quagga)
 function readBarcode() {
     Quagga.decodeSingle({
         src: video,
@@ -77,7 +78,7 @@ function readBarcode() {
         decoder: {
             readers: ["ean_reader"]
         }
-    }, function(result) {
+    }, function (result) {
         if (result && result.codeResult) {
             console.log("Código de barras detectado:", result.codeResult.code);
             fetchProductData(result.codeResult.code);
