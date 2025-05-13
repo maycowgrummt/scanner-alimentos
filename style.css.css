@@ -1,72 +1,40 @@
-body {
-  font-family: 'Roboto', sans-serif;
+* {
   margin: 0;
-  background-color: #f2f2f2;
-  color: #333;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.app-container {
-  max-width: 480px;
-  margin: auto;
-  padding: 1rem;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #111;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   text-align: center;
 }
 
+.container {
+  max-width: 500px;
+  width: 100%;
+  padding: 20px;
+}
+
 h1 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
-.scanner-box {
+video {
   width: 100%;
-  height: 300px;
-  position: relative;
-  overflow: hidden;
+  height: auto;
+  border-radius: 12px;
   background: #000;
-  border-radius: 12px;
-  margin-bottom: 1rem;
+  margin-bottom: 10px;
 }
 
-#scanner video, canvas {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.manual-search {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 1rem;
-  margin: 0.5rem 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #218838;
-}
-
-.result h2 {
-  margin-top: 0;
-  color: #007bff;
+#camera-status {
+  font-size: 14px;
+  color: #aaa;
 }
