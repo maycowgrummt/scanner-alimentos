@@ -1,106 +1,71 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const startBtn = document.getElementById('start-scanner');
-    const video = document.getElementById('scanner-video');
-    const productInfo = document.getElementById('product-info');
-    const scanAgainBtn = document.getElementById('scan-again');
+const startBtn = document.getElementById('start-scanner');
+const video = document.getElementById('scanner-video');
+const scannerContainer = document.getElementById('scanner-container');
+const productInfo = document.getElementById('product-info');
 
-    // Verificar compatibilidade
-    function checkCompatibility() {
+// Iniciar câmera
+async function startCamera() {
+    try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert('Seu navegador não suporta acesso à câmera ou você não está em HTTPS');
-            return false;
+            throw new Error('Seu navegador não suporta acesso à câmera');
         }
-        return true;
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: { ideal: 'environment' },
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        });
+
+        video.srcObject = stream;
+        await new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                video.play()
+                    .then(resolve)
+                    .catch(err => {
+                        console.error("Erro ao reproduzir vídeo:", err);
+                        alert("Toque na tela para ativar a câmera.");
+                    });
+            };
+        });
+
+        video.style.display = 'block';
+        startBtn.style.display = 'none';
+        console.log("Câmera iniciada com sucesso!");
+
+    } catch (error) {
+        console.error("Erro ao acessar a câmera:", error);
+        alert(`Erro: ${error.message}`);
     }
+}
 
-    // Iniciar câmera
-    async function startCamera() {
-        if (!checkCompatibility()) return;
-
-        try {
-            startBtn.disabled = true;
-            startBtn.textContent = 'Acessando câmera...';
-
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }
-            });
-
-            video.srcObject = stream;
-            video.playsInline = true;
-            video.muted = true;
-
-            // Esperar o vídeo estar pronto
-            await new Promise((resolve) => {
-                video.onloadedmetadata = () => {
-                    video.play()
-                        .then(resolve)
-                        .catch(e => {
-                            console.error('Erro ao reproduzir:', e);
-                            // Tentativa alternativa para iOS
-                            video.play().then(resolve).catch(e2 => {
-                                console.error('Falha na segunda tentativa:', e2);
-                                alert('Toque na tela para ativar a câmera');
-                            });
-                        });
-                };
-            });
-
-            video.style.display = 'block';
-            startBtn.style.display = 'none';
-            console.log('Câmera iniciada com sucesso!');
-
-        } catch (error) {
-            console.error('Erro na câmera:', error);
-            handleCameraError(error);
-            startBtn.disabled = false;
-            startBtn.textContent = 'Iniciar Scanner';
-        }
+// Parar câmera
+function stopCamera() {
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
     }
+    video.style.display = 'none';
+    startBtn.style.display = 'block';
+}
 
-    // Tratar erros
-    function handleCameraError(error) {
-        let message = 'Erro ao acessar a câmera: ';
-        
-        switch(error.name) {
-            case 'NotAllowedError':
-                message += 'Permissão negada. Ative nas configurações do navegador.';
-                break;
-            case 'NotFoundError':
-                message += 'Nenhuma câmera encontrada.';
-                break;
-            case 'NotReadableError':
-                message += 'Câmera já em uso por outro aplicativo.';
-                break;
-            default:
-                message += error.message;
-        }
-        
-        alert(message);
-    }
+// Event listeners
+startBtn.addEventListener('click', startCamera);
 
-    // Parar câmera
-    function stopCamera() {
-        if (video.srcObject) {
-            video.srcObject.getTracks().forEach(track => track.stop());
-            video.srcObject = null;
-        }
-        video.style.display = 'none';
-        startBtn.style.display = 'block';
-        startBtn.disabled = false;
-        startBtn.textContent = 'Iniciar Scanner';
-    }
-
-    // Event listeners
-    startBtn.addEventListener('click', startCamera);
-    scanAgainBtn.addEventListener('click', () => {
-        productInfo.style.display = 'none';
-        startCamera();
-    });
-
-    // Limpar ao sair
-    window.addEventListener('beforeunload', stopCamera);
+document.getElementById('scan-again').addEventListener('click', () => {
+    productInfo.style.display = 'none';
+    scannerContainer.style.display = 'block';
+    startCamera();
 });
+
+window.addEventListener('beforeunload', stopCamera);
+
+// Debug opcional
+setInterval(() => {
+    console.log("Status do vídeo:", {
+        readyState: video.readyState,
+        paused: video.paused,
+        srcObject: !!video.srcObject
+    });
+}, 3000);
