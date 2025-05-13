@@ -17,6 +17,11 @@
             <p class="hint">Toque no botão para iniciar a leitura do código de barras do produto.</p>
         </div>
 
+        <div id="manual-input-container">
+            <label for="manual-input">Digite o código de barras:</label>
+            <input type="text" id="manual-input" placeholder="Código de barras" />
+        </div>
+
         <div id="product-info" style="display: none;">
             <h2 id="product-name">Nome do Produto</h2>
             <p id="bad-ingredients">Ingredientes Nocivos</p>
@@ -24,14 +29,8 @@
             <button id="scan-again">Escanear Novamente</button>
         </div>
 
-        <!-- Mensagem de erro -->
-        <div id="error-message" style="display: none;">
-            <p>Produto não encontrado</p>
-            <button id="close-error">Fechar</button>
-        </div>
-
         <div id="loading-overlay" style="display: none;">
-            <span>Carregando...</span>
+            <p>Carregando...</p>
         </div>
     </div>
 
