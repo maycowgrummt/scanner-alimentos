@@ -4,121 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner de Alimentos</title>
-    <style>
-        /* Seu estilo CSS aqui */
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="scanner-container">
-        <video id="scanner-video" autoplay></video>
-        <button id="start-scanner">Iniciar Scanner</button>
-    </div>
-    <div id="product-info" style="display:none;">
-        <h2 id="product-name"></h2>
-        <p id="bad-ingredients"></p>
-        <p id="healthy-alternatives"></p>
-        <button id="scan-again">Escanear Novamente</button>
+    <div class="container">
+        <h1>Scanner de Alimentos</h1>
+
+        <!-- Div do scanner de código de barras -->
+        <div id="scanner-container">
+            <video id="scanner-video" autoplay></video>
+            <button id="start-scanner">Iniciar Scanner</button>
+        </div>
+
+        <!-- Div de informações do produto -->
+        <div id="product-info" style="display: none;">
+            <h2 id="product-name">Nome do Produto</h2>
+            <p id="bad-ingredients">Ingredientes Nocivos</p>
+            <p id="healthy-alternatives">Alternativas Saudáveis</p>
+            <button id="scan-again">Escanear Novamente</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    <script>
-        // Elementos da página
-        const startBtn = document.getElementById('start-scanner');
-        const video = document.getElementById('scanner-video');
-        const scannerContainer = document.getElementById('scanner-container');
-        const productInfo = document.getElementById('product-info');
-        const productName = document.getElementById('product-name');
-        const badIngredients = document.getElementById('bad-ingredients');
-        const healthyAlternatives = document.getElementById('healthy-alternatives');
-        const scanAgainBtn = document.getElementById('scan-again');
-
-        // Chave API FoodData Central
-        const apiKey = zs4YT4kukrgO3PuHzad9MLtsz301uYiy95Z4kX0S;  // Substitua com sua chave API
-
-        // Iniciar câmera
-        startBtn.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: "environment",
-                        width: { ideal: 1280 }
-                    }
-                });
-
-                video.srcObject = stream;
-                scannerContainer.style.display = "block";
-                startBtn.style.display = "none";
-
-                // Iniciar Quagga para escanear o código de barras
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: video,
-                        constraints: {
-                            facingMode: "environment"
-                        }
-                    },
-                    decoder: {
-                        readers: ["ean_reader", "upc_reader"]  // Ler códigos de barras EAN e UPC
-                    }
-                }, function(err) {
-                    if (err) {
-                        console.log("Erro ao iniciar Quagga:", err);
-                        return;
-                    }
-                    Quagga.start();
-                });
-
-                // Quando o Quagga detectar um código de barras, faz a busca do produto
-                Quagga.onDetected(function(result) {
-                    const codigo = result.codeResult.code;
-                    mostrarProduto(codigo);
-                });
-
-            } catch (err) {
-                let mensagem;
-                if (err.name === "NotAllowedError") {
-                    mensagem = "Permissão da câmera negada. Ative nas configurações do navegador.";
-                } else if (err.name === "NotFoundError") {
-                    mensagem = "Nenhuma câmera encontrada.";
-                } else {
-                    mensagem = `Erro: ${err.message}`;
-                }
-                alert(mensagem);
-                console.error(err);
-            }
-        });
-
-        // Função para buscar informações sobre o produto na FoodData Central
-        async function mostrarProduto(codigo) {
-            const url = `https://api.nal.usda.gov/fdc/v1/food/${codigo}?api_key=${apiKey}`;
-            try {
-                const resposta = await fetch(url);
-                const dados = await resposta.json();
-
-                if (dados) {
-                    const produto = dados;
-                    productName.textContent = produto.foodName || "Produto desconhecido";
-                    badIngredients.textContent = produto.ingredients || "Sem informações sobre ingredientes.";
-                    healthyAlternatives.textContent = "Substitua por alimentos naturais e menos processados.";
-
-                    scannerContainer.style.display = "none";
-                    productInfo.style.display = "block";
-                } else {
-                    alert("Produto não encontrado na base de dados da FoodData Central.");
-                }
-            } catch (erro) {
-                console.error("Erro ao buscar produto:", erro);
-                alert("Erro ao consultar produto.");
-            }
-        }
-
-        // Reiniciar scanner
-        scanAgainBtn.addEventListener('click', () => {
-            productInfo.style.display = "none";
-            scannerContainer.style.display = "block";
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
