@@ -119,21 +119,6 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <script>
-    const produtos = [
-      {
-        codigo: "7891000315507",
-        nome: "Biscoito Recheado Chocolate",
-        ingredientes_nocivos: "Açúcar, gordura vegetal hidrogenada, corante artificial",
-        alternativas: "Biscoito integral sem recheio, frutas desidratadas"
-      },
-      {
-        codigo: "7896051116011",
-        nome: "Refrigerante de Cola",
-        ingredientes_nocivos: "Açúcar, acidulante ácido fosfórico, corante caramelo IV",
-        alternativas: "Água com gás e limão, chá gelado natural"
-      }
-    ];
-
     const startBtn = document.getElementById('start-scanner');
     const scannerContainer = document.getElementById('scanner-container');
     const productInfo = document.getElementById('product-info');
@@ -144,6 +129,7 @@
 
     let html5QrCode;
 
+    // Inicia o scanner de código de barras
     startBtn.addEventListener('click', () => {
       startBtn.style.display = "none";
       scannerContainer.style.display = "block";
@@ -169,7 +155,7 @@
         config,
         (decodedText) => {
           html5QrCode.stop();
-          mostrarProduto(decodedText);
+          buscarProdutoNaAPI(decodedText);
         },
         (err) => {
           // Pode ignorar erros de leitura
@@ -180,9 +166,35 @@
       });
     });
 
-    function mostrarProduto(codigo) {
-      const produto = produtos.find(p => p.codigo === codigo);
+    // Função para buscar produto na API do Open Food Facts
+    async function buscarProdutoNaAPI(codigo) {
+      const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
 
+      try {
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+
+        if (dados.status === 1) {
+          const produto = dados.product;
+
+          mostrarProduto({
+            nome: produto.product_name || "Nome não encontrado",
+            ingredientes_nocivos: produto.ingredients_text || "Sem informações sobre ingredientes",
+            alternativas: "Busque alternativas mais naturais"
+          });
+        } else {
+          alert("Produto não encontrado na base de dados.");
+          mostrarProduto(null);
+        }
+      } catch (erro) {
+        console.error("Erro ao buscar produto na API:", erro);
+        alert("Erro ao buscar informações do produto.");
+        mostrarProduto(null);
+      }
+    }
+
+    // Exibe as informações do produto na interface
+    function mostrarProduto(produto) {
       if (produto) {
         productName.textContent = produto.nome;
         badIngredients.textContent = produto.ingredientes_nocivos;
@@ -191,12 +203,12 @@
         scannerContainer.style.display = "none";
         productInfo.style.display = "block";
       } else {
-        alert("Produto não cadastrado. Adicione manualmente.");
         productInfo.style.display = "none";
         startBtn.style.display = "block";
       }
     }
 
+    // Reiniciar o scanner
     scanAgainBtn.addEventListener('click', () => {
       productInfo.style.display = "none";
       scannerContainer.style.display = "block";
@@ -218,7 +230,7 @@
         },
         (decodedText) => {
           html5QrCode.stop();
-          mostrarProduto(decodedText);
+          buscarProdutoNaAPI(decodedText);
         },
         (err) => {}
       );
