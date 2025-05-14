@@ -4,103 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner de Alimentos</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      color: #4CAF50;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
-    }
-
-    p {
-      margin-bottom: 20px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      width: 100%;
-      margin: 10px 0;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #scanner-container {
-      display: none;
-      margin: 20px 0;
-      text-align: center;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 400px;
-      margin: auto;
-    }
-
-    .hint {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 10px;
-    }
-
-    #product-info {
-      display: none;
-      margin-top: 20px;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 8px;
-    }
-
-    #product-name {
-      color: #2E7D32;
-      margin-bottom: 10px;
-    }
-
-    #scan-again {
-      margin-top: 15px;
-      background: #2196F3;
-    }
-
-    #scan-again:hover {
-      background: #0b7dda;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Scanner de Alimentos</h1>
     <p>Verifique ingredientes nocivos e veja alternativas saudáveis</p>
-    <button id="start-scanner">INICIAR SCANNER</button>
+    <button id="start-scanner" aria-label="Iniciar scanner de alimentos">INICIAR SCANNER</button>
 
     <div id="scanner-container">
       <div id="reader"></div>
@@ -111,130 +21,11 @@
       <h2 id="product-name"></h2>
       <p><strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
       <p><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
-      <button id="scan-again">ESCANEAR NOVAMENTE</button>
+      <button id="scan-again" aria-label="Escanear outro produto">ESCANEAR NOVAMENTE</button>
     </div>
   </div>
 
-  <!-- Biblioteca de leitura de código de barras -->
   <script src="https://unpkg.com/html5-qrcode"></script>
-
-  <script>
-    const startBtn = document.getElementById('start-scanner');
-    const scannerContainer = document.getElementById('scanner-container');
-    const productInfo = document.getElementById('product-info');
-    const productName = document.getElementById('product-name');
-    const badIngredients = document.getElementById('bad-ingredients');
-    const healthyAlternatives = document.getElementById('healthy-alternatives');
-    const scanAgainBtn = document.getElementById('scan-again');
-
-    let html5QrCode;
-
-    // Inicia o scanner de código de barras
-    startBtn.addEventListener('click', () => {
-      startBtn.style.display = "none";
-      scannerContainer.style.display = "block";
-
-      html5QrCode = new Html5Qrcode("reader");
-
-      const config = {
-        fps: 10,
-        qrbox: 250,
-        aspectRatio: 1.333,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true
-        },
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.UPC_A
-        ]
-      };
-
-      html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        (decodedText) => {
-          html5QrCode.stop();
-          buscarProdutoNaAPI(decodedText);
-        },
-        (err) => {
-          // Pode ignorar erros de leitura
-        }
-      ).catch(err => {
-        alert("Erro ao iniciar câmera: " + err);
-        console.error(err);
-      });
-    });
-
-    // Função para buscar produto na API do Open Food Facts
-    async function buscarProdutoNaAPI(codigo) {
-      const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
-
-      try {
-        const resposta = await fetch(url);
-        const dados = await resposta.json();
-
-        if (dados.status === 1) {
-          const produto = dados.product;
-
-          mostrarProduto({
-            nome: produto.product_name || "Nome não encontrado",
-            ingredientes_nocivos: produto.ingredients_text || "Sem informações sobre ingredientes",
-            alternativas: "Busque alternativas mais naturais"
-          });
-        } else {
-          alert("Produto não encontrado na base de dados.");
-          mostrarProduto(null);
-        }
-      } catch (erro) {
-        console.error("Erro ao buscar produto na API:", erro);
-        alert("Erro ao buscar informações do produto.");
-        mostrarProduto(null);
-      }
-    }
-
-    // Exibe as informações do produto na interface
-    function mostrarProduto(produto) {
-      if (produto) {
-        productName.textContent = produto.nome;
-        badIngredients.textContent = produto.ingredientes_nocivos;
-        healthyAlternatives.textContent = produto.alternativas;
-
-        scannerContainer.style.display = "none";
-        productInfo.style.display = "block";
-      } else {
-        productInfo.style.display = "none";
-        startBtn.style.display = "block";
-      }
-    }
-
-    // Reiniciar o scanner
-    scanAgainBtn.addEventListener('click', () => {
-      productInfo.style.display = "none";
-      scannerContainer.style.display = "block";
-
-      html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: 250,
-          aspectRatio: 1.333,
-          experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true
-          },
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.EAN_13,
-            Html5QrcodeSupportedFormats.CODE_128,
-            Html5QrcodeSupportedFormats.UPC_A
-          ]
-        },
-        (decodedText) => {
-          html5QrCode.stop();
-          buscarProdutoNaAPI(decodedText);
-        },
-        (err) => {}
-      );
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
