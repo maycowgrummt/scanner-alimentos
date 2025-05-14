@@ -12,7 +12,6 @@ const ingredientesNocivosList = [
   "gordura vegetal hidrogenada", "corante", "acidulante", "aspartame", "glutamato", "conservante"
 ];
 
-// Banco local de produtos
 const produtosLocais = [
   {
     codigo: "7891000315507",
@@ -63,13 +62,11 @@ startBtn.addEventListener('click', () => {
 });
 
 async function buscarProduto(codigo) {
-  // Verifica no banco local primeiro
   const local = produtosLocais.find(p => p.codigo === codigo);
   if (local) {
     return mostrarProduto(local);
   }
 
-  // Senão, consulta API
   try {
     const resposta = await fetch(`https://world.openfoodfacts.org/api/v2/product/${codigo}`);
     const dados = await resposta.json();
@@ -138,3 +135,13 @@ scanAgainBtn.addEventListener('click', () => {
     (err) => {}
   );
 });
+
+// Registro do Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('./service-worker.js')
+      .then(() => console.log('✅ Service Worker registrado com sucesso!'))
+      .catch(err => console.error('Erro ao registrar Service Worker:', err));
+  });
+}
