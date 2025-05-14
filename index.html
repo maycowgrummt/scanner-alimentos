@@ -59,7 +59,6 @@
       display: none;
       margin: 20px 0;
       text-align: center;
-      position: relative;
     }
 
     #reader {
@@ -98,7 +97,6 @@
       background: #0b7dda;
     }
 
-    /* Estilo para a área de foco de leitura do código de barras */
     .scanner-focus {
       position: absolute;
       top: 50%;
@@ -148,6 +146,11 @@
 
     let html5QrCode;
 
+    // Lista de ingredientes nocivos
+    const ingredientesNocivos = [
+      'açúcar', 'glutamato monossódico', 'corante', 'gordura trans', 'benzoato de sódio', 'acidulante', 'corante caramelo', 'glicose', 'sódio'
+    ];
+
     // Inicia o scanner de código de barras
     startBtn.addEventListener('click', () => {
       startBtn.style.display = "none";
@@ -195,16 +198,18 @@
 
         if (dados.status === 1) {
           const produto = dados.product;
+          const ingredientes = produto.ingredients_text || "Informações sobre ingredientes nocivos não disponíveis.";
 
-          // Extração dos dados do produto da API
-          const ingredientesNocivos = produto.ingredients_text || "Informações sobre ingredientes nocivos não disponíveis.";
-          const alternativasSaudaveis = produto.alternatives || "Alternativas saudáveis não disponíveis.";
+          // Filtrar os ingredientes nocivos
+          const nocivos = ingredientes.split(',').filter(ingrediente => {
+            return ingredientesNocivos.some(nocivo => ingrediente.toLowerCase().includes(nocivo));
+          });
 
-          // Mostrando o produto com ingredientes nocivos e alternativas
+          // Mostrar os ingredientes nocivos
           mostrarProduto({
             nome: produto.product_name || "Nome não encontrado",
-            ingredientes_nocivos: ingredientesNocivos,
-            alternativas: alternativasSaudaveis
+            ingredientes_nocivos: nocivos.join(', ') || "Nenhum ingrediente nocivo encontrado.",
+            alternativas: "Busque alternativas mais naturais"
           });
         } else {
           alert("Produto não encontrado na base de dados.");
@@ -244,4 +249,21 @@
           qrbox: 250,
           aspectRatio: 1.333,
           experimentalFeatures: {
-            useBarCodeDetectorIf
+            useBarCodeDetectorIfSupported: true
+          },
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.UPC_A
+          ]
+        },
+        (decodedText) => {
+          html5QrCode.stop();
+          buscarProdutoNaAPI(decodedText);
+        },
+        (err) => {}
+      );
+    });
+  </script>
+</body>
+</html>
