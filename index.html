@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner de Alimentos</title>
   <style>
+    /* Estilos básicos para a página */
     * {
       margin: 0;
       padding: 0;
@@ -110,6 +111,31 @@
       background-color: rgba(255, 255, 255, 0.7);
       z-index: 1;
     }
+
+    .error-message {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #f44336;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      z-index: 10;
+      display: none;
+    }
+
+    .close-error {
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: white;
+      font-weight: bold;
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -130,6 +156,11 @@
       <p><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
       <button id="scan-again">ESCANEAR NOVAMENTE</button>
     </div>
+
+    <div class="error-message" id="error-message">
+      <p id="error-text">Erro ao iniciar o scanner ou processar o código de barras.</p>
+      <button class="close-error" id="close-error">FECHAR</button>
+    </div>
   </div>
 
   <!-- Biblioteca de leitura de código de barras -->
@@ -143,6 +174,8 @@
     const badIngredients = document.getElementById('bad-ingredients');
     const healthyAlternatives = document.getElementById('healthy-alternatives');
     const scanAgainBtn = document.getElementById('scan-again');
+    const errorMessage = document.getElementById('error-message');
+    const closeErrorBtn = document.getElementById('close-error');
 
     let html5QrCode;
 
@@ -180,13 +213,23 @@
           buscarProdutoNaAPI(decodedText);
         },
         (err) => {
-          console.error("Erro ao ler o código de barras:", err);
-          alert("Erro ao iniciar o scanner ou processar o código de barras.");
+          showError("Erro ao processar o código de barras: " + err);
         }
       ).catch(err => {
-        console.error("Erro ao iniciar câmera: ", err);
-        alert("Erro ao acessar a câmera. Certifique-se de que a permissão foi concedida.");
+        showError("Erro ao acessar a câmera. Certifique-se de que a permissão foi concedida.");
       });
+    });
+
+    // Função para mostrar a mensagem de erro
+    function showError(message) {
+      const errorText = document.getElementById('error-text');
+      errorText.textContent = message;
+      errorMessage.style.display = 'block';
+    }
+
+    // Fechar a mensagem de erro
+    closeErrorBtn.addEventListener('click', () => {
+      errorMessage.style.display = 'none';
     });
 
     // Função para buscar produto na API do Open Food Facts
