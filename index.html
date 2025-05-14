@@ -213,9 +213,11 @@
           buscarProdutoNaAPI(decodedText);
         },
         (err) => {
-          showError("Erro ao processar o código de barras: " + err);
+          console.error("Erro ao processar o código de barras:", err);
+          showError("Erro ao processar o código de barras. Verifique se o código está claro e visível.");
         }
       ).catch(err => {
+        console.error("Erro ao acessar a câmera:", err);
         showError("Erro ao acessar a câmera. Certifique-se de que a permissão foi concedida.");
       });
     });
