@@ -180,11 +180,12 @@
           buscarProdutoNaAPI(decodedText);
         },
         (err) => {
-          // Pode ignorar erros de leitura
+          console.error("Erro ao ler o código de barras:", err);
+          alert("Erro ao iniciar o scanner ou processar o código de barras.");
         }
       ).catch(err => {
-        alert("Erro ao iniciar câmera: " + err);
-        console.error(err);
+        console.error("Erro ao iniciar câmera: ", err);
+        alert("Erro ao acessar a câmera. Certifique-se de que a permissão foi concedida.");
       });
     });
 
