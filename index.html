@@ -89,6 +89,16 @@
       margin-bottom: 10px;
     }
 
+    #product-image {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    #product-image img {
+      max-width: 200px;
+      border-radius: 8px;
+    }
+
     #scan-again {
       margin-top: 15px;
       background: #2196F3;
@@ -151,6 +161,9 @@
     </div>
 
     <div id="product-info">
+      <div id="product-image">
+        <img id="product-photo" src="" alt="Foto do Produto" />
+      </div>
       <h2 id="product-name"></h2>
       <p><strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
       <p><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
@@ -173,6 +186,7 @@
     const productName = document.getElementById('product-name');
     const badIngredients = document.getElementById('bad-ingredients');
     const healthyAlternatives = document.getElementById('healthy-alternatives');
+    const productPhoto = document.getElementById('product-photo');
     const scanAgainBtn = document.getElementById('scan-again');
     const errorMessage = document.getElementById('error-message');
     const closeErrorBtn = document.getElementById('close-error');
@@ -269,11 +283,15 @@
           // Buscar alternativas saudáveis com base na categoria
           const alternativas = alternativasSaudaveis[categoria] || alternativasSaudaveis['snacks']; // Fallback para snacks se não encontrar
 
+          // Exibir imagem do produto
+          const imagemProduto = produto.image_url || '';
+
           // Mostrar os ingredientes nocivos e alternativas
           mostrarProduto({
             nome: produto.product_name || "Nome não encontrado",
             ingredientes_nocivos: nocivos.join(', ') || "Nenhum ingrediente nocivo encontrado.",
-            alternativas: alternativas.map(a => a.nome).join(', ') || "Nenhuma alternativa encontrada."
+            alternativas: alternativas.map(a => a.nome).join(', ') || "Nenhuma alternativa encontrada.",
+            imagem: imagemProduto
           });
         } else {
           alert("Produto não encontrado na base de dados.");
@@ -292,7 +310,10 @@
         productName.textContent = produto.nome;
         badIngredients.textContent = produto.ingredientes_nocivos;
         healthyAlternatives.textContent = produto.alternativas;
+        productPhoto.src = produto.imagem;
 
+        // Exibir a imagem do produto
+        productPhoto.style.display = produto.imagem ? "block" : "none";
         scannerContainer.style.display = "none";
         productInfo.style.display = "block";
       } else {
