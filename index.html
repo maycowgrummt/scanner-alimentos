@@ -263,11 +263,11 @@
             return ingredientesNocivos.some(nocivo => ingrediente.toLowerCase().includes(nocivo));
           });
 
-          // Categorizar o produto
+          // Categorizar o produto (caso não haja categoria, atribui 'outros')
           const categoria = produto.categories_tags ? produto.categories_tags[0] : 'outros';
 
           // Buscar alternativas saudáveis com base na categoria
-          const alternativas = alternativasSaudaveis[categoria] || [{ nome: 'Alternativa não disponível', tipo: 'outros' }];
+          const alternativas = alternativasSaudaveis[categoria] || alternativasSaudaveis['snacks']; // Fallback para snacks se não encontrar
 
           // Mostrar os ingredientes nocivos e alternativas
           mostrarProduto({
