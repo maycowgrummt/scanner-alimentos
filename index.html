@@ -214,53 +214,45 @@
         { nome: 'Iogurte Natural', tipo: 'laticínios' },
         { nome: 'Leite de Amêndoas', tipo: 'laticínios' },
         { nome: 'Queijo Branco', tipo: 'laticínios' }
-      ]
+      ],
+      'biscoitos': [
+        { nome: 'Biscoito Integral', tipo: 'biscoito' },
+        { nome: 'Biscoito de Aveia', tipo: 'biscoito' },
+        { nome: 'Biscoito Sem Glúten', tipo: 'biscoito' }
+      ],
+      // Adicionar mais categorias conforme necessário
     };
 
-    // Inicia o scanner de código de barras
+    // Função para iniciar o scanner
     startBtn.addEventListener('click', () => {
-      startBtn.style.display = "none";
-      scannerContainer.style.display = "block";
+      startBtn.style.display = 'none';
+      scannerContainer.style.display = 'block';
 
       html5QrCode = new Html5Qrcode("reader");
-
-      const config = {
-        fps: 10,
-        qrbox: 250,
-        aspectRatio: 1.333,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true
-        },
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.UPC_A
-        ]
-      };
-
       html5QrCode.start(
         { facingMode: "environment" },
-        config,
+        {
+          fps: 10,
+          qrbox: 250,
+          aspectRatio: 1.333,
+          experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true
+          },
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.UPC_A
+          ]
+        },
         (decodedText) => {
           html5QrCode.stop();
           buscarProdutoNaAPI(decodedText);
         },
-        (err) => {
-          console.error("Erro ao processar o código de barras:", err);
-          hideError(); // Esconde a mensagem de erro imediatamente
-        }
-      ).catch(err => {
-        console.error("Erro ao acessar a câmera:", err);
-        hideError(); // Esconde a mensagem de erro imediatamente
-      });
+        (err) => {}
+      );
     });
 
-    // Função para esconder a mensagem de erro
-    function hideError() {
-      errorMessage.style.display = 'none';  // Esconde a mensagem de erro
-    }
-
-    // Função para buscar produto na API do Open Food Facts
+    // Função para buscar o produto na API do Open Food Facts
     async function buscarProdutoNaAPI(codigo) {
       const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
 
@@ -286,7 +278,7 @@
           // Exibir imagem do produto
           const imagemProduto = produto.image_url || '';
 
-          // Mostrar os ingredientes nocivos e alternativas
+          // Mostrar o produto na tela
           mostrarProduto({
             nome: produto.product_name || "Nome não encontrado",
             ingredientes_nocivos: nocivos.join(', ') || "Nenhum ingrediente nocivo encontrado.",
