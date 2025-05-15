@@ -4,154 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner de Alimentos</title>
-  <!-- Link para o Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Estilos básicos para a página */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      color: #4CAF50;
-      margin-bottom: 10px;
-      font-size: 1.5rem;
-    }
-
-    p {
-      margin-bottom: 20px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      width: 100%;
-      margin: 10px 0;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #scanner-container {
-      display: none;
-      margin: 20px 0;
-      text-align: center;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 400px;
-      margin: auto;
-      border: 2px solid #4CAF50;
-      border-radius: 8px;
-    }
-
-    .hint {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 10px;
-    }
-
-    #product-info {
-      display: none;
-      margin-top: 20px;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 8px;
-    }
-
-    #product-name {
-      color: #2E7D32;
-      margin-bottom: 10px;
-    }
-
-    #product-image {
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    #product-image img {
-      max-width: 200px;
-      border-radius: 8px;
-    }
-
-    #scan-again {
-      margin-top: 15px;
-      background: #2196F3;
-    }
-
-    #scan-again:hover {
-      background: #0b7dda;
-    }
-
-    .scanner-focus {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 250px;
-      height: 250px;
-      border: 2px dashed #4CAF50;
-      border-radius: 5px;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      background-color: rgba(255, 255, 255, 0.7);
-      z-index: 1;
-    }
-
-    .error-message {
-      position: fixed;
-      top: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #f44336;
-      color: white;
-      padding: 20px;
-      border-radius: 8px;
-      z-index: 10;
-      display: none;
-    }
-
-    .close-error {
-      cursor: pointer;
-      background: transparent;
-      border: none;
-      color: white;
-      font-weight: bold;
-      position: absolute;
-      top: 5px;
-      right: 10px;
-      font-size: 16px;
-    }
-
-    .icon {
-      margin-right: 10px;
-    }
+    /* Seu estilo atual... */
   </style>
 </head>
 <body>
@@ -182,7 +37,6 @@
     </div>
   </div>
 
-  <!-- Biblioteca de leitura de código de barras -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <script>
@@ -204,22 +58,32 @@
       'açúcar', 'glutamato monossódico', 'corante', 'gordura trans', 'benzoato de sódio', 'acidulante', 'corante caramelo', 'glicose', 'sódio'
     ];
 
-    // Banco de alternativas saudáveis por categoria de produto
+    // Banco de alternativas saudáveis atualizado por categoria
     const alternativasSaudaveis = {
       'bebidas': [
         { nome: 'Suco Natural de Laranja', tipo: 'bebida' },
-        { nome: 'Água com Gás', tipo: 'bebida' },
+        { nome: 'Água de Coco', tipo: 'bebida' },
         { nome: 'Chá Verde Natural', tipo: 'bebida' }
       ],
       'snacks': [
-        { nome: 'Frutas Secas', tipo: 'snack' },
-        { nome: 'Barras de Cereal', tipo: 'snack' },
-        { nome: 'Chips de Batata Doce', tipo: 'snack' }
+        { nome: 'Mix de Nozes e Castanhas', tipo: 'snack' },
+        { nome: 'Barras de Cereal Integral', tipo: 'snack' },
+        { nome: 'Chips de Abobrinha Assada', tipo: 'snack' }
       ],
-      'biscoito': [
-        { nome: 'Biscoito Integral', tipo: 'biscoito' },
-        { nome: 'Biscoito de Aveia', tipo: 'biscoito' },
-        { nome: 'Biscoito Sem Glúten', tipo: 'biscoito' }
+      'biscoitos': [
+        { nome: 'Biscoito Integral de Aveia', tipo: 'biscoito' },
+        { nome: 'Biscoito Sem Glúten de Cacau', tipo: 'biscoito' },
+        { nome: 'Biscoito de Amêndoas', tipo: 'biscoito' }
+      ],
+      'refrigerantes': [
+        { nome: 'Água com Gás com Limão', tipo: 'refrigerante' },
+        { nome: 'Chá Natural de Ervas', tipo: 'refrigerante' },
+        { nome: 'Kombucha', tipo: 'refrigerante' }
+      ],
+      'laticínios': [
+        { nome: 'Iogurte Natural Integral', tipo: 'laticínios' },
+        { nome: 'Queijo Minas Frescal', tipo: 'laticínios' },
+        { nome: 'Kefir', tipo: 'laticínios' }
       ]
     };
 
