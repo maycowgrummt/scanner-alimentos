@@ -6,7 +6,6 @@
   <title>Scanner de Alimentos</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Seu código de estilo permanece o mesmo */
     * {
       margin: 0;
       padding: 0;
@@ -78,12 +77,9 @@
       background-color: #f8f8f8;
     }
 
+    /* Esconder o quadrado verde pontilhado */
     .scanner-focus {
-      border: 3px dashed #4CAF50;
-      width: 250px;
-      height: 250px;
-      margin: 0 auto;
-      margin-top: 10px;
+      display: none; /* Torna o quadrado invisível */
     }
 
     .hint {
@@ -259,7 +255,23 @@
       );
     });
 
-    // Buscar informações do produto na Open Food Facts
+    // Função para exibir a imagem do produto com verificação de URL
+    function exibirImagemProduto(urlImagem) {
+      if (urlImagem) {
+        const img = new Image();
+        img.onload = function() {
+          productPhoto.src = urlImagem;
+        };
+        img.onerror = function() {
+          productPhoto.src = 'https://via.placeholder.com/150';
+        };
+        img.src = urlImagem;
+      } else {
+        productPhoto.src = 'https://via.placeholder.com/150';
+      }
+    }
+
+    // Buscar informações do produto
     function buscarProdutoNaAPI(codigoDeBarras) {
       const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${codigoDeBarras}.json`;
 
@@ -271,11 +283,10 @@
 
             // Exibir o nome do produto
             productName.textContent = produto.product_name || 'Nome não encontrado';
-            
-            // Exibir a imagem do produto
-            productPhoto.src = produto.image_url || 'https://via.placeholder.com/150';
-            productPhoto.style.display = "block";
-            
+
+            // Exibir a imagem do produto (usando a função exibirImagemProduto)
+            exibirImagemProduto(produto.image_url);
+
             // Exibir ingredientes nocivos
             mostrarIngredientesNocivos(produto.ingredients_text || '');
 
@@ -287,13 +298,11 @@
             scannerContainer.style.display = "none";
             productInfo.style.display = "block";
           } else {
-            // Produto não encontrado ou erro
             errorMessage.style.display = 'block';
             document.getElementById('error-text').textContent = 'Produto não encontrado ou erro ao acessar a API.';
           }
         })
         .catch(error => {
-          // Erro de rede ou API
           errorMessage.style.display = 'block';
           document.getElementById('error-text').textContent = 'Erro ao acessar a API.';
         });
