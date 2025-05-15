@@ -6,14 +6,170 @@
   <title>Scanner de Alimentos</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Seu estilo atual... */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7fa;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      width: 100%;
+      max-width: 450px;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    .icon {
+      color: #4CAF50;
+    }
+
+    #start-scanner {
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 15px 25px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #start-scanner:hover {
+      background-color: #45a049;
+    }
+
+    #scanner-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #reader {
+      margin-bottom: 20px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      background-color: #f8f8f8;
+    }
+
+    .scanner-focus {
+      border: 3px dashed #4CAF50;
+      width: 250px;
+      height: 250px;
+      margin: 0 auto;
+      margin-top: 10px;
+    }
+
+    .hint {
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    #product-info {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #product-photo {
+      width: 80%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin: 20px 0;
+    }
+
+    #product-name {
+      font-size: 1.5rem;
+      color: #333;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    #product-info p {
+      font-size: 1rem;
+      color: #555;
+      margin: 5px 0;
+    }
+
+    #product-info span {
+      font-weight: bold;
+    }
+
+    #scan-again {
+      background-color: #FFC107;
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    #scan-again:hover {
+      background-color: #e0a800;
+    }
+
+    .error-message {
+      display: none;
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .close-error {
+      background: transparent;
+      border: none;
+      color: #721c24;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      float: right;
+    }
+
+    .close-error:hover {
+      color: #c82333;
+    }
+
+    .error-message i {
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1><i class="fas fa-utensils icon"></i>Scanner de Alimentos</h1>
-    <p><i class="fas fa-search icon"></i>Verifique ingredientes nocivos e veja alternativas saudáveis</p>
-    <button id="start-scanner"><i class="fas fa-camera-retro icon"></i>Iniciar Scanner</button>
+    <h1><i class="fas fa-utensils icon"></i> Scanner de Alimentos</h1>
+    <p><i class="fas fa-search icon"></i> Verifique ingredientes nocivos e veja alternativas saudáveis</p>
+    <button id="start-scanner"><i class="fas fa-camera-retro icon"></i> Iniciar Scanner</button>
 
     <div id="scanner-container">
       <div id="reader"></div>
@@ -28,12 +184,12 @@
       <h2 id="product-name"></h2>
       <p><i class="fas fa-exclamation-circle icon"></i><strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
       <p><i class="fas fa-apple-alt icon"></i><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
-      <button id="scan-again"><i class="fas fa-sync-alt icon"></i>Escanear Novamente</button>
+      <button id="scan-again"><i class="fas fa-sync-alt icon"></i> Escanear Novamente</button>
     </div>
 
     <div class="error-message" id="error-message">
-      <p id="error-text"><i class="fas fa-times-circle icon"></i>Erro ao iniciar o scanner ou processar o código de barras.</p>
-      <button class="close-error" id="close-error"><i class="fas fa-times icon"></i>Fechar</button>
+      <p id="error-text"><i class="fas fa-times-circle icon"></i> Erro ao iniciar o scanner ou processar o código de barras.</p>
+      <button class="close-error" id="close-error"><i class="fas fa-times icon"></i> Fechar</button>
     </div>
   </div>
 
@@ -87,27 +243,13 @@
       ]
     };
 
-    // Função para iniciar o scanner
+    // Iniciar o scanner
     startBtn.addEventListener('click', () => {
-      startBtn.style.display = 'none';
       scannerContainer.style.display = 'block';
-
       html5QrCode = new Html5Qrcode("reader");
       html5QrCode.start(
         { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: 250,
-          aspectRatio: 1.333,
-          experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true
-          },
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.EAN_13,
-            Html5QrcodeSupportedFormats.CODE_128,
-            Html5QrcodeSupportedFormats.UPC_A
-          ]
-        },
+        { fps: 10, qrbox: 250 },
         (decodedText) => {
           html5QrCode.stop();
           buscarProdutoNaAPI(decodedText);
@@ -116,88 +258,53 @@
       );
     });
 
-    // Função para buscar o produto na API do Open Food Facts
-    async function buscarProdutoNaAPI(codigo) {
-      const url = `https://world.openfoodfacts.org/api/v2/product/${codigo}`;
+    // Buscar informações do produto
+    function buscarProdutoNaAPI(codigoDeBarras) {
+      // Aqui você deve buscar a API que retorna os dados do produto
+      // Para fins de exemplo, estou criando um mockup de resposta:
+      const produto = {
+        nome: "Biscoito de Limão",
+        imagem: "https://via.placeholder.com/150",
+        ingredientes: "açúcar, farinha de trigo, glutamato monossódico, corante",
+        categoria: "biscoitos"
+      };
 
-      try {
-        const resposta = await fetch(url);
-        const dados = await resposta.json();
+      // Exibir o nome do produto
+      productName.textContent = produto.nome;
+      // Exibir a imagem do produto
+      productPhoto.src = produto.imagem;
+      productPhoto.style.display = "block";
+      // Exibir ingredientes nocivos
+      mostrarIngredientesNocivos(produto.ingredientes);
+      // Exibir alternativas saudáveis
+      mostrarAlternativasSaudaveis(produto.categoria);
 
-        if (dados.status === 1) {
-          const produto = dados.product;
-          const ingredientes = produto.ingredients_text || "Informações sobre ingredientes nocivos não disponíveis.";
-
-          // Filtrar os ingredientes nocivos
-          const nocivos = ingredientes.split(',').filter(ingrediente => {
-            return ingredientesNocivos.some(nocivo => ingrediente.toLowerCase().includes(nocivo));
-          });
-
-          // Categorizar o produto (caso não haja categoria, atribui 'outros')
-          const categoria = produto.categories_tags ? produto.categories_tags[0] : 'outros';
-
-          // Buscar alternativas saudáveis com base na categoria
-          const alternativas = alternativasSaudaveis[categoria] || alternativasSaudaveis['snacks']; // Fallback para snacks se não encontrar
-
-          // Exibir imagem do produto
-          const imagemProduto = produto.image_url || '';
-
-          // Mostrar o produto na tela
-          mostrarProduto({
-            nome: produto.product_name || "Nome não encontrado",
-            ingredientes_nocivos: nocivos.join(', ') || "Nenhum ingrediente nocivo encontrado.",
-            alternativas: alternativas.map(a => a.nome).join(', ') || "Nenhuma alternativa encontrada.",
-            imagem: imagemProduto
-          });
-        } else {
-          alert("Produto não encontrado na base de dados.");
-          mostrarProduto(null);
-        }
-      } catch (erro) {
-        console.error("Erro ao buscar produto na API:", erro);
-        alert("Erro ao buscar informações do produto.");
-        mostrarProduto(null);
-      }
+      // Alterar a exibição
+      scannerContainer.style.display = "none";
+      productInfo.style.display = "block";
     }
 
-    // Função para exibir as informações do produto
-    function mostrarProduto(produto) {
-      if (produto) {
-        productName.textContent = produto.nome;
-        badIngredients.textContent = produto.ingredientes_nocivos;
-        healthyAlternatives.textContent = produto.alternativas;
-        productPhoto.src = produto.imagem;
+    // Mostrar ingredientes nocivos
+    function mostrarIngredientesNocivos(ingredientes) {
+      const ingredientesArray = ingredientes.split(',').map(ing => ing.trim().toLowerCase());
+      const nocivos = ingredientesArray.filter(ing => ingredientesNocivos.some(ingrediente => ing.includes(ingrediente)));
 
-        // Exibir a imagem do produto
-        productPhoto.style.display = produto.imagem ? "block" : "none";
-        scannerContainer.style.display = "none";
-        productInfo.style.display = "block";
-      } else {
-        productInfo.style.display = "none";
-        startBtn.style.display = "block";
-      }
+      badIngredients.textContent = nocivos.length ? nocivos.join(', ') : 'Nenhum ingrediente nocivo encontrado';
+    }
+
+    // Mostrar alternativas saudáveis
+    function mostrarAlternativasSaudaveis(categoria) {
+      const alternativas = alternativasSaudaveis[categoria];
+      healthyAlternatives.textContent = alternativas && alternativas.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
     }
 
     // Reiniciar o scanner
     scanAgainBtn.addEventListener('click', () => {
       productInfo.style.display = "none";
       scannerContainer.style.display = "block";
-
       html5QrCode.start(
         { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: 250,
-          aspectRatio: 1.333,
-          experimentalFeatures: {
-            useBarCodeDetectorIfSupported: true
-          },
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.EAN_13,
-            Html5QrcodeSupportedFormats.CODE_128,
-            Html5QrcodeSupportedFormats.UPC_A
-          ]
-        },
+        { fps: 10, qrbox: 250 },
         (decodedText) => {
           html5QrCode.stop();
           buscarProdutoNaAPI(decodedText);
