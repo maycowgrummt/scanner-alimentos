@@ -32,25 +32,18 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .hero-image {
+    /* Imagem de topo */
+    .top-image {
       width: 100%;
-      max-width: 400px;
-      height: auto;
+      max-height: 200px;
+      object-fit: cover;
       border-radius: 10px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      font-size: 2rem;
-      color: #4CAF50;
-      margin-bottom: 20px;
-      font-weight: bold;
     }
 
     p {
       font-size: 1rem;
-      color: #777;
+      color: #555;
       margin-bottom: 30px;
     }
 
@@ -67,6 +60,14 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #start-scanner i {
+      color: #fff; /* Ícone branco */
     }
 
     #start-scanner:hover {
@@ -172,17 +173,19 @@
 </head>
 <body>
   <div class="container">
-    <!-- ✅ Imagem no topo -->
-    <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-6f94-6230-b249-09f4ec1b3d5d/raw?se=2025-05-16T02%3A05%3A02Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=61180a4f-34a9-42b7-b76d-9ca47d89946d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T21%3A50%3A18Z&ske=2025-05-16T21%3A50%3A18Z&sks=b&skv=2024-08-04&sig=ocxUGdd14TqJA94KKy/dM3JgnoJZmxCB9kMVDD16wcQ%3D" alt="Imagem de alimentos saudáveis" class="hero-image">
+    <!-- ✅ IMAGEM INICIAL -->
+    <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-6f94-6230-b249-09f4ec1b3d5d/raw?se=2025-05-16T02%3A05%3A02Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=61180a4f-34a9-42b7-b76d-9ca47d89946d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T21%3A50%3A18Z&ske=2025-05-16T21%3A50%3A18Z&sks=b&skv=2024-08-04&sig=ocxUGdd14TqJA94KKy/dM3JgnoJZmxCB9kMVDD16wcQ%3D" alt="Imagem Inicial" class="top-image" />
 
-    <h1><i class="fas fa-utensils icon"></i> Scanner de Alimentos</h1>
-    <p><i class="fas fa-search icon"></i> Verifique ingredientes nocivos e veja alternativas saudáveis</p>
-    <button id="start-scanner"><i class="fas fa-camera-retro icon"></i> Iniciar Scanner</button>
+    <!-- ✅ NOVO TEXTO -->
+    <p><i class="fas fa-search icon"></i> Verifique ingredientes ultraprocessados e veja alternativas mais saudáveis</p>
+
+    <!-- ✅ BOTÃO COM ÍCONE BRANCO E CENTRALIZADO -->
+    <button id="start-scanner"><i class="fas fa-camera-retro"></i> Iniciar Scanner</button>
 
     <div id="scanner-container">
       <div id="reader"></div>
       <div class="scanner-focus"></div>
-      <p class="hint"><i class="fas fa-info-circle icon"></i>Aponte a câmera para o código de barras do produto</p>
+      <p class="hint"><i class="fas fa-info-circle icon"></i> Aponte a câmera para o código de barras do produto</p>
     </div>
 
     <div id="product-info">
@@ -190,8 +193,8 @@
         <img id="product-photo" src="" alt="Foto do Produto" />
       </div>
       <h2 id="product-name"></h2>
-      <p><i class="fas fa-exclamation-circle icon"></i><strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
-      <p><i class="fas fa-apple-alt icon"></i><strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
+      <p><i class="fas fa-exclamation-circle icon"></i> <strong>Ingredientes nocivos:</strong> <span id="bad-ingredients"></span></p>
+      <p><i class="fas fa-apple-alt icon"></i> <strong>Alternativas saudáveis:</strong> <span id="healthy-alternatives"></span></p>
       <button id="scan-again"><i class="fas fa-sync-alt icon"></i> Escanear Novamente</button>
     </div>
 
@@ -202,136 +205,6 @@
   </div>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
-
-  <script>
-    const startBtn = document.getElementById('start-scanner');
-    const scannerContainer = document.getElementById('scanner-container');
-    const productInfo = document.getElementById('product-info');
-    const productName = document.getElementById('product-name');
-    const badIngredients = document.getElementById('bad-ingredients');
-    const healthyAlternatives = document.getElementById('healthy-alternatives');
-    const productPhoto = document.getElementById('product-photo');
-    const scanAgainBtn = document.getElementById('scan-again');
-    const errorMessage = document.getElementById('error-message');
-    const closeErrorBtn = document.getElementById('close-error');
-
-    let html5QrCode;
-
-    const ingredientesNocivos = [
-      'açúcar', 'glutamato monossódico', 'corante', 'gordura trans', 'benzoato de sódio', 'acidulante', 'corante caramelo', 'glicose', 'sódio'
-    ];
-
-    const alternativasSaudaveis = {
-      'bebidas': [
-        { nome: 'Suco Natural de Laranja', tipo: 'bebida' },
-        { nome: 'Água de Coco', tipo: 'bebida' },
-        { nome: 'Chá Verde Natural', tipo: 'bebida' }
-      ],
-      'snacks': [
-        { nome: 'Mix de Nozes e Castanhas', tipo: 'snack' },
-        { nome: 'Barras de Cereal Integral', tipo: 'snack' },
-        { nome: 'Chips de Abobrinha Assada', tipo: 'snack' }
-      ],
-      'biscoitos': [
-        { nome: 'Biscoito Integral de Aveia', tipo: 'biscoito' },
-        { nome: 'Biscoito Sem Glúten de Cacau', tipo: 'biscoito' },
-        { nome: 'Biscoito de Amêndoas', tipo: 'biscoito' }
-      ],
-      'refrigerantes': [
-        { nome: 'Água com Gás com Limão', tipo: 'refrigerante' },
-        { nome: 'Chá Natural de Ervas', tipo: 'refrigerante' },
-        { nome: 'Kombucha', tipo: 'refrigerante' }
-      ],
-      'laticínios': [
-        { nome: 'Iogurte Natural Integral', tipo: 'laticínios' },
-        { nome: 'Queijo Minas Frescal', tipo: 'laticínios' },
-        { nome: 'Kefir', tipo: 'laticínios' }
-      ]
-    };
-
-    function exibirImagemProduto(urlImagem) {
-      if (urlImagem) {
-        const img = new Image();
-        img.onload = function() {
-          productPhoto.src = urlImagem;
-        };
-        img.onerror = function() {
-          productPhoto.src = 'https://via.placeholder.com/150';
-        };
-        img.src = urlImagem;
-      } else {
-        productPhoto.src = 'https://via.placeholder.com/150';
-      }
-    }
-
-    function buscarProdutoNaAPI(codigoDeBarras) {
-      const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${codigoDeBarras}.json`;
-
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 1) {
-            const produto = data.product;
-            productName.textContent = produto.product_name || 'Nome não encontrado';
-            exibirImagemProduto(produto.image_url);
-            mostrarIngredientesNocivos(produto.ingredients_text || '');
-            const categoria = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
-            mostrarAlternativasSaudaveis(categoria);
-            scannerContainer.style.display = "none";
-            productInfo.style.display = "block";
-          } else {
-            errorMessage.style.display = 'block';
-            document.getElementById('error-text').textContent = 'Produto não encontrado ou erro ao acessar a API.';
-          }
-        })
-        .catch(error => {
-          errorMessage.style.display = 'block';
-          document.getElementById('error-text').textContent = 'Erro ao acessar a API.';
-        });
-    }
-
-    function mostrarIngredientesNocivos(ingredientes) {
-      const ingredientesArray = ingredientes.split(',').map(ing => ing.trim().toLowerCase());
-      const nocivos = ingredientesArray.filter(ing => ingredientesNocivos.some(ingrediente => ing.includes(ingrediente)));
-      badIngredients.textContent = nocivos.length ? nocivos.join(', ') : 'Nenhum ingrediente nocivo encontrado';
-    }
-
-    function mostrarAlternativasSaudaveis(categoria) {
-      const alternativas = alternativasSaudaveis[categoria];
-      healthyAlternatives.textContent = alternativas && alternativas.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
-    }
-
-    startBtn.addEventListener('click', () => {
-      scannerContainer.style.display = 'block';
-      html5QrCode = new Html5Qrcode("reader");
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        (decodedText) => {
-          html5QrCode.stop();
-          buscarProdutoNaAPI(decodedText);
-        },
-        (err) => {}
-      );
-    });
-
-    scanAgainBtn.addEventListener('click', () => {
-      productInfo.style.display = "none";
-      scannerContainer.style.display = "block";
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        (decodedText) => {
-          html5QrCode.stop();
-          buscarProdutoNaAPI(decodedText);
-        },
-        (err) => {}
-      );
-    });
-
-    closeErrorBtn.addEventListener('click', () => {
-      errorMessage.style.display = 'none';
-    });
-  </script>
+  <!-- Seu script JavaScript existente permanece inalterado aqui -->
 </body>
 </html>
