@@ -34,14 +34,13 @@
     }
 
     .top-image {
-      width: 100%;
-      max-height: 220px;
-      object-fit: contain;
+      width: 100%;           /* ocupa toda a largura do container */
+      height: 200px;         /* altura fixa para proporção retangular */
+      object-fit: cover;     /* cobre todo o espaço, mantendo proporção */
       border-radius: 10px;
       margin-bottom: 25px;
       display: block;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto;
     }
 
     p {
@@ -198,7 +197,7 @@
       }
 
       .top-image {
-        max-height: 180px;
+        height: 160px;
       }
     }
   </style>
@@ -275,45 +274,14 @@
         { nome: 'Iogurte Natural Integral' },
         { nome: 'Queijo Minas Frescal' },
         { nome: 'Kefir' }
-      ],
-      'outros': [
-        { nome: 'Frutas Frescas' },
-        { nome: 'Legumes e Verduras' },
-        { nome: 'Grãos Integrais' }
       ]
     };
-
-    // Função para mapear categorias com sinônimos para evitar problemas de chave não encontrada
-    function mapearCategoria(categoria) {
-      categoria = categoria.toLowerCase();
-
-      if (categoria.includes('bebida') || categoria.includes('drink') || categoria.includes('suco') || categoria.includes('água') || categoria.includes('chá')) {
-        return 'bebidas';
-      }
-      if (categoria.includes('snack') || categoria.includes('lanchinho') || categoria.includes('barra') || categoria.includes('nozes') || categoria.includes('castanha')) {
-        return 'snacks';
-      }
-      if (categoria.includes('biscoito') || categoria.includes('cookie') || categoria.includes('bolacha')) {
-        return 'biscoitos';
-      }
-      if (categoria.includes('refrigerante') || categoria.includes('soda') || categoria.includes('refri')) {
-        return 'refrigerantes';
-      }
-      if (categoria.includes('laticínio') || categoria.includes('leite') || categoria.includes('queijo') || categoria.includes('iogurte') || categoria.includes('kefir')) {
-        return 'laticínios';
-      }
-      return 'outros';
-    }
 
     function exibirImagemProduto(urlImagem) {
       if (urlImagem) {
         const img = new Image();
-        img.onload = function() {
-          productPhoto.src = urlImagem;
-        };
-        img.onerror = function() {
-          productPhoto.src = 'https://via.placeholder.com/150';
-        };
+        img.onload = () => productPhoto.src = urlImagem;
+        img.onerror = () => productPhoto.src = 'https://via.placeholder.com/150';
         img.src = urlImagem;
       } else {
         productPhoto.src = 'https://via.placeholder.com/150';
@@ -324,20 +292,15 @@
       const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${codigoDeBarras}.json`;
 
       fetch(apiUrl)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
           if (data.status === 1) {
             const produto = data.product;
             productName.textContent = produto.product_name || 'Nome não encontrado';
             exibirImagemProduto(produto.image_url);
             mostrarIngredientesNocivos(produto.ingredients_text || '');
-
-            // Usando a função de mapeamento para pegar categoria aprimorada
-            const categoriaOriginal = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
-            const categoriaMapeada = mapearCategoria(categoriaOriginal);
-
-            mostrarAlternativasSaudaveis(categoriaMapeada);
-
+            const categoria = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
+            mostrarAlternativasSaudaveis(categoria);
             scannerContainer.style.display = "none";
             productInfo.style.display = "block";
           } else {
@@ -359,7 +322,9 @@
 
     function mostrarAlternativasSaudaveis(categoria) {
       const alternativas = alternativasSaudaveis[categoria];
-      healthyAlternatives.textContent = alternativas?.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
+      healthyAlternatives.textContent = alternativas?.length
+        ? alternativas.map(alt => alt.nome).join(', ')
+        : 'Nenhuma alternativa encontrada';
     }
 
     function iniciarScanner() {
@@ -367,16 +332,14 @@
         html5QrCode = new Html5Qrcode("reader");
       }
       html5QrCode.start(
-        { facingMode: "environment" },  // Usando a câmera traseira do dispositivo
+        { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
-        (decodedText) => {
+        decodedText => {
           html5QrCode.stop();
           buscarProdutoNaAPI(decodedText);
         },
-        (err) => {
-          console.error("Erro ao ler o código", err);
-        }
-      ).catch((err) => {
+        err => console.error("Erro ao ler o código", err)
+      ).catch(err => {
         errorMessage.style.display = 'block';
         document.getElementById('error-text').textContent = 'Erro ao iniciar o scanner.';
       });
