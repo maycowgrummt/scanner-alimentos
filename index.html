@@ -275,8 +275,35 @@
         { nome: 'Iogurte Natural Integral' },
         { nome: 'Queijo Minas Frescal' },
         { nome: 'Kefir' }
+      ],
+      'outros': [
+        { nome: 'Frutas Frescas' },
+        { nome: 'Legumes e Verduras' },
+        { nome: 'Grãos Integrais' }
       ]
     };
+
+    // Função para mapear categorias com sinônimos para evitar problemas de chave não encontrada
+    function mapearCategoria(categoria) {
+      categoria = categoria.toLowerCase();
+
+      if (categoria.includes('bebida') || categoria.includes('drink') || categoria.includes('suco') || categoria.includes('água') || categoria.includes('chá')) {
+        return 'bebidas';
+      }
+      if (categoria.includes('snack') || categoria.includes('lanchinho') || categoria.includes('barra') || categoria.includes('nozes') || categoria.includes('castanha')) {
+        return 'snacks';
+      }
+      if (categoria.includes('biscoito') || categoria.includes('cookie') || categoria.includes('bolacha')) {
+        return 'biscoitos';
+      }
+      if (categoria.includes('refrigerante') || categoria.includes('soda') || categoria.includes('refri')) {
+        return 'refrigerantes';
+      }
+      if (categoria.includes('laticínio') || categoria.includes('leite') || categoria.includes('queijo') || categoria.includes('iogurte') || categoria.includes('kefir')) {
+        return 'laticínios';
+      }
+      return 'outros';
+    }
 
     function exibirImagemProduto(urlImagem) {
       if (urlImagem) {
@@ -304,8 +331,13 @@
             productName.textContent = produto.product_name || 'Nome não encontrado';
             exibirImagemProduto(produto.image_url);
             mostrarIngredientesNocivos(produto.ingredients_text || '');
-            const categoria = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
-            mostrarAlternativasSaudaveis(categoria);
+
+            // Usando a função de mapeamento para pegar categoria aprimorada
+            const categoriaOriginal = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
+            const categoriaMapeada = mapearCategoria(categoriaOriginal);
+
+            mostrarAlternativasSaudaveis(categoriaMapeada);
+
             scannerContainer.style.display = "none";
             productInfo.style.display = "block";
           } else {
@@ -330,32 +362,12 @@
       healthyAlternatives.textContent = alternativas?.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
     }
 
-    startBtn.addEventListener('click', () => {
-      scannerContainer.style.display = 'block';
-      
+    function iniciarScanner() {
       if (!html5QrCode) {
         html5QrCode = new Html5Qrcode("reader");
-
-        html5QrCode.start(
-          { facingMode: "environment" },  // Usando a câmera traseira do dispositivo
-          { fps: 10, qrbox: 250 },
-          (decodedText) => {
-            html5QrCode.stop();
-            buscarProdutoNaAPI(decodedText);
-          },
-          (err) => {
-            console.error("Erro ao ler o código", err);
-          }
-        );
       }
-    });
-
-    scanAgainBtn.addEventListener('click', () => {
-      productInfo.style.display = "none";
-      scannerContainer.style.display = "block";
-      
       html5QrCode.start(
-        { facingMode: "environment" },
+        { facingMode: "environment" },  // Usando a câmera traseira do dispositivo
         { fps: 10, qrbox: 250 },
         (decodedText) => {
           html5QrCode.stop();
@@ -364,7 +376,24 @@
         (err) => {
           console.error("Erro ao ler o código", err);
         }
-      );
+      ).catch((err) => {
+        errorMessage.style.display = 'block';
+        document.getElementById('error-text').textContent = 'Erro ao iniciar o scanner.';
+      });
+    }
+
+    startBtn.addEventListener('click', () => {
+      scannerContainer.style.display = 'block';
+      productInfo.style.display = 'none';
+      errorMessage.style.display = 'none';
+      iniciarScanner();
+    });
+
+    scanAgainBtn.addEventListener('click', () => {
+      productInfo.style.display = "none";
+      scannerContainer.style.display = "block";
+      errorMessage.style.display = 'none';
+      iniciarScanner();
     });
 
     closeErrorBtn.addEventListener('click', () => {
