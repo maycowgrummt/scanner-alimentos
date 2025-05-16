@@ -19,7 +19,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     .container {
@@ -32,7 +33,6 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    /* Imagem de topo */
     .top-image {
       width: 100%;
       max-height: 200px;
@@ -56,7 +56,7 @@
       color: #fff;
       border: none;
       padding: 15px 25px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
@@ -64,10 +64,12 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
+      width: 100%;
     }
 
     #start-scanner i {
-      color: #fff; /* Ícone branco */
+      color: #fff;
+      font-size: 1.2rem;
     }
 
     #start-scanner:hover {
@@ -102,7 +104,7 @@
     }
 
     #product-photo {
-      width: 80%;
+      width: 100%;
       height: auto;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -110,7 +112,7 @@
     }
 
     #product-name {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: #333;
       font-weight: bold;
       margin-bottom: 10px;
@@ -136,6 +138,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       margin-top: 20px;
+      width: 100%;
     }
 
     #scan-again:hover {
@@ -169,17 +172,41 @@
     .error-message i {
       margin-right: 10px;
     }
+
+    /* ✅ RESPONSIVIDADE */
+    @media (max-width: 500px) {
+      .container {
+        padding: 15px;
+      }
+
+      #start-scanner,
+      #scan-again {
+        font-size: 1rem;
+        padding: 12px 18px;
+      }
+
+      p,
+      .hint,
+      #product-info p {
+        font-size: 0.95rem;
+      }
+
+      #product-name {
+        font-size: 1.2rem;
+      }
+
+      .top-image {
+        max-height: 160px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- ✅ IMAGEM INICIAL -->
     <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-6f94-6230-b249-09f4ec1b3d5d/raw?se=2025-05-16T02%3A05%3A02Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=61180a4f-34a9-42b7-b76d-9ca47d89946d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T21%3A50%3A18Z&ske=2025-05-16T21%3A50%3A18Z&sks=b&skv=2024-08-04&sig=ocxUGdd14TqJA94KKy/dM3JgnoJZmxCB9kMVDD16wcQ%3D" alt="Imagem Inicial" class="top-image" />
 
-    <!-- ✅ NOVO TEXTO -->
     <p><i class="fas fa-search icon"></i> Verifique ingredientes ultraprocessados e veja alternativas mais saudáveis</p>
 
-    <!-- ✅ BOTÃO COM ÍCONE BRANCO E CENTRALIZADO -->
     <button id="start-scanner"><i class="fas fa-camera-retro"></i> Iniciar Scanner</button>
 
     <div id="scanner-container">
@@ -205,6 +232,5 @@
   </div>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
-  <!-- Seu script JavaScript existente permanece inalterado aqui -->
 </body>
 </html>
