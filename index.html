@@ -32,6 +32,15 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
+    .hero-image {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
     h1 {
       font-size: 2rem;
       color: #4CAF50;
@@ -77,9 +86,8 @@
       background-color: #f8f8f8;
     }
 
-    /* Esconder o quadrado verde pontilhado */
     .scanner-focus {
-      display: none; /* Torna o quadrado invisível */
+      display: none;
     }
 
     .hint {
@@ -164,6 +172,9 @@
 </head>
 <body>
   <div class="container">
+    <!-- ✅ Imagem no topo -->
+    <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-6f94-6230-b249-09f4ec1b3d5d/raw?se=2025-05-16T02%3A05%3A02Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=61180a4f-34a9-42b7-b76d-9ca47d89946d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T21%3A50%3A18Z&ske=2025-05-16T21%3A50%3A18Z&sks=b&skv=2024-08-04&sig=ocxUGdd14TqJA94KKy/dM3JgnoJZmxCB9kMVDD16wcQ%3D" alt="Imagem de alimentos saudáveis" class="hero-image">
+
     <h1><i class="fas fa-utensils icon"></i> Scanner de Alimentos</h1>
     <p><i class="fas fa-search icon"></i> Verifique ingredientes nocivos e veja alternativas saudáveis</p>
     <button id="start-scanner"><i class="fas fa-camera-retro icon"></i> Iniciar Scanner</button>
@@ -206,12 +217,10 @@
 
     let html5QrCode;
 
-    // Lista de ingredientes nocivos
     const ingredientesNocivos = [
       'açúcar', 'glutamato monossódico', 'corante', 'gordura trans', 'benzoato de sódio', 'acidulante', 'corante caramelo', 'glicose', 'sódio'
     ];
 
-    // Banco de alternativas saudáveis atualizado por categoria
     const alternativasSaudaveis = {
       'bebidas': [
         { nome: 'Suco Natural de Laranja', tipo: 'bebida' },
@@ -240,22 +249,6 @@
       ]
     };
 
-    // Iniciar o scanner
-    startBtn.addEventListener('click', () => {
-      scannerContainer.style.display = 'block';
-      html5QrCode = new Html5Qrcode("reader");
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        (decodedText) => {
-          html5QrCode.stop();
-          buscarProdutoNaAPI(decodedText);
-        },
-        (err) => {}
-      );
-    });
-
-    // Função para exibir a imagem do produto com verificação de URL
     function exibirImagemProduto(urlImagem) {
       if (urlImagem) {
         const img = new Image();
@@ -271,7 +264,6 @@
       }
     }
 
-    // Buscar informações do produto
     function buscarProdutoNaAPI(codigoDeBarras) {
       const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${codigoDeBarras}.json`;
 
@@ -280,21 +272,11 @@
         .then(data => {
           if (data.status === 1) {
             const produto = data.product;
-
-            // Exibir o nome do produto
             productName.textContent = produto.product_name || 'Nome não encontrado';
-
-            // Exibir a imagem do produto (usando a função exibirImagemProduto)
             exibirImagemProduto(produto.image_url);
-
-            // Exibir ingredientes nocivos
             mostrarIngredientesNocivos(produto.ingredients_text || '');
-
-            // Exibir alternativas saudáveis
             const categoria = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
             mostrarAlternativasSaudaveis(categoria);
-
-            // Alterar a exibição
             scannerContainer.style.display = "none";
             productInfo.style.display = "block";
           } else {
@@ -308,21 +290,31 @@
         });
     }
 
-    // Mostrar ingredientes nocivos
     function mostrarIngredientesNocivos(ingredientes) {
       const ingredientesArray = ingredientes.split(',').map(ing => ing.trim().toLowerCase());
       const nocivos = ingredientesArray.filter(ing => ingredientesNocivos.some(ingrediente => ing.includes(ingrediente)));
-
       badIngredients.textContent = nocivos.length ? nocivos.join(', ') : 'Nenhum ingrediente nocivo encontrado';
     }
 
-    // Mostrar alternativas saudáveis
     function mostrarAlternativasSaudaveis(categoria) {
       const alternativas = alternativasSaudaveis[categoria];
       healthyAlternatives.textContent = alternativas && alternativas.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
     }
 
-    // Reiniciar o scanner
+    startBtn.addEventListener('click', () => {
+      scannerContainer.style.display = 'block';
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          html5QrCode.stop();
+          buscarProdutoNaAPI(decodedText);
+        },
+        (err) => {}
+      );
+    });
+
     scanAgainBtn.addEventListener('click', () => {
       productInfo.style.display = "none";
       scannerContainer.style.display = "block";
@@ -337,7 +329,6 @@
       );
     });
 
-    // Fechar a mensagem de erro
     closeErrorBtn.addEventListener('click', () => {
       errorMessage.style.display = 'none';
     });
