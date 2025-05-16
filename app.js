@@ -1,25 +1,25 @@
 // Seletores principais
-const startBtn           = document.getElementById('start-scanner');
-const scannerContainer   = document.getElementById('scanner-container');
-const productInfo        = document.getElementById('product-info');
-const productName        = document.getElementById('product-name');
-const badIngredients     = document.getElementById('bad-ingredients');
-const healthyAlternatives= document.getElementById('healthy-alternatives');
-const productPhoto       = document.getElementById('product-photo');
-const scanAgainBtn       = document.getElementById('scan-again');
-const errorMessage       = document.getElementById('error-message');
-const closeErrorBtn      = document.getElementById('close-error');
+const startBtn            = document.getElementById('start-scanner');
+const scannerContainer    = document.getElementById('scanner-container');
+const productInfo         = document.getElementById('product-info');
+const productName         = document.getElementById('product-name');
+const badIngredients      = document.getElementById('bad-ingredients');
+const healthyAlternatives = document.getElementById('healthy-alternatives');
+const productPhoto        = document.getElementById('product-photo');
+const scanAgainBtn        = document.getElementById('scan-again');
+const errorMessage        = document.getElementById('error-message');
+const closeErrorBtn       = document.getElementById('close-error');
 
 let html5QrCode;
 
 // Ingredientes nocivos
 const ingredientesNocivos = [
-  'açúcar', 'glutamato monossódico', 'corante',
-  'gordura trans', 'benzoato de sódio',
-  'acidulante', 'corante caramelo', 'glicose', 'sódio'
+  'açúcar','glutamato monossódico','corante',
+  'gordura trans','benzoato de sódio',
+  'acidulante','corante caramelo','glicose','sódio'
 ];
 
-// Alternativas saudáveis + nova categoria "massas"
+// Alternativas saudáveis + categoria "massas"
 const alternativasSaudaveis = {
   bebidas: [
     { nome: 'Suco Natural de Laranja' },
@@ -53,35 +53,28 @@ const alternativasSaudaveis = {
   ]
 };
 
-// Função mapeadora com “instant” e “ramen”
+// Função de mapeamento estendida
 function mapearCategoria(categoria) {
   categoria = categoria.toLowerCase();
-
-  if (categoria.includes('bebida')      || categoria.includes('drink')   || categoria.includes('suco') ||
-      categoria.includes('água')        || categoria.includes('chá'))
+  if (categoria.includes('bebida') || categoria.includes('drink') || categoria.includes('suco') || categoria.includes('água') || categoria.includes('chá')) {
     return 'bebidas';
-
-  if (categoria.includes('snack')       || categoria.includes('barra')   || categoria.includes('castanha'))
+  }
+  if (categoria.includes('snack') || categoria.includes('barra') || categoria.includes('castanha')) {
     return 'snacks';
-
-  if (categoria.includes('biscoito')    || categoria.includes('cookie')  || categoria.includes('bolacha'))
+  }
+  if (categoria.includes('biscoito') || categoria.includes('cookie') || categoria.includes('bolacha')) {
     return 'biscoitos';
-
-  if (categoria.includes('refrigerante')|| categoria.includes('soda')    || categoria.includes('refri'))
+  }
+  if (categoria.includes('refrigerante') || categoria.includes('soda') || categoria.includes('refri')) {
     return 'refrigerantes';
-
-  if (categoria.includes('laticínio')   || categoria.includes('leite')   || categoria.includes('queijo') ||
-      categoria.includes('iogurte')     || categoria.includes('kefir'))
+  }
+  if (categoria.includes('laticínio') || categoria.includes('leite') || categoria.includes('queijo') || categoria.includes('iogurte') || categoria.includes('kefir')) {
     return 'laticínios';
-
-  // <<< MASSAS: massa, macarrão, noodle, instant, ramen >>>
-  if (categoria.includes('massa')       ||
-      categoria.includes('macarrão')    ||
-      categoria.includes('noodle')     ||
-      categoria.includes('instant')    ||
-      categoria.includes('ramen'))
+  }
+  // Massas: massa, macarrão, noodle, instant, ramen
+  if (categoria.includes('massa') || categoria.includes('macarrão') || categoria.includes('noodle') || categoria.includes('instant') || categoria.includes('ramen')) {
     return 'massas';
-
+  }
   return 'outros';
 }
 
@@ -103,8 +96,11 @@ function mostrarIngredientesNocivos(ingredientes) {
 }
 
 function mostrarAlternativasSaudaveis(categoria) {
+  // Log de debug
+  console.log('Buscando alternativas para categoria:', categoria, alternativasSaudaveis[categoria]);
+
   const alt = alternativasSaudaveis[categoria];
-  healthyAlternatives.textContent = alt?.length
+  healthyAlternatives.textContent = alt && alt.length
     ? alt.map(a => a.nome).join(', ')
     : 'Nenhuma alternativa encontrada';
 }
@@ -117,10 +113,8 @@ function buscarProdutoNaAPI(codigoDeBarras) {
         const p = data.product;
         productName.textContent = p.product_name || 'Nome não encontrado';
         exibirImagemProduto(p.image_url);
-
         mostrarIngredientesNocivos(p.ingredients_text || '');
 
-        // DEBUG: confira no console
         const catRaw = p.categories ? p.categories.split(',')[0] : '';
         console.log('Categoria bruta do produto:', catRaw);
         const catMap = mapearCategoria(catRaw);
@@ -162,9 +156,9 @@ startBtn.addEventListener('click', () => {
 });
 
 scanAgainBtn.addEventListener('click', () => {
-  productInfo.style.display   = 'none';
-  scannerContainer.style.display = 'block';
-  errorMessage.style.display  = 'none';
+  productInfo.style.display       = 'none';
+  scannerContainer.style.display  = 'block';
+  errorMessage.style.display      = 'none';
   iniciarScanner();
 });
 
