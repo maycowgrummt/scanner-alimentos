@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scanner de Alimentos</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-  <!-- Link para o Manifesto -->
-  <link rel="manifest" href="manifest.json" />
-
   <style>
-    /* Seu CSS original aqui... */
     * {
       margin: 0;
       padding: 0;
@@ -236,18 +231,141 @@
   <!-- SCRIPT HTML5 QR CODE -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
-    // Adicionar código para registrar o Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(function() {
-          console.log('Service Worker registrado com sucesso');
+    const startBtn = document.getElementById('start-scanner');
+    const scannerContainer = document.getElementById('scanner-container');
+    const productInfo = document.getElementById('product-info');
+    const productName = document.getElementById('product-name');
+    const badIngredients = document.getElementById('bad-ingredients');
+    const healthyAlternatives = document.getElementById('healthy-alternatives');
+    const productPhoto = document.getElementById('product-photo');
+    const scanAgainBtn = document.getElementById('scan-again');
+    const errorMessage = document.getElementById('error-message');
+    const closeErrorBtn = document.getElementById('close-error');
+
+    let html5QrCode;
+
+    const ingredientesNocivos = ['açúcar', 'glutamato monossódico', 'corante', 'gordura trans', 'benzoato de sódio', 'acidulante', 'corante caramelo', 'glicose', 'sódio'];
+
+    const alternativasSaudaveis = {
+      'bebidas': [
+        { nome: 'Suco Natural de Laranja' },
+        { nome: 'Água de Coco' },
+        { nome: 'Chá Verde Natural' }
+      ],
+      'snacks': [
+        { nome: 'Mix de Nozes e Castanhas' },
+        { nome: 'Barras de Cereal Integral' },
+        { nome: 'Chips de Abobrinha Assada' }
+      ],
+      'biscoitos': [
+        { nome: 'Biscoito Integral de Aveia' },
+        { nome: 'Biscoito Sem Glúten de Cacau' },
+        { nome: 'Biscoito de Amêndoas' }
+      ],
+      'refrigerantes': [
+        { nome: 'Água com Gás com Limão' },
+        { nome: 'Chá Natural de Ervas' },
+        { nome: 'Kombucha' }
+      ],
+      'laticínios': [
+        { nome: 'Iogurte Natural Integral' },
+        { nome: 'Queijo Minas Frescal' },
+        { nome: 'Kefir' }
+      ]
+    };
+
+    function exibirImagemProduto(urlImagem) {
+      if (urlImagem) {
+        const img = new Image();
+        img.onload = function() {
+          productPhoto.src = urlImagem;
+        };
+        img.onerror = function() {
+          productPhoto.src = 'https://via.placeholder.com/150';
+        };
+        img.src = urlImagem;
+      } else {
+        productPhoto.src = 'https://via.placeholder.com/150';
+      }
+    }
+
+    function buscarProdutoNaAPI(codigoDeBarras) {
+      const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${codigoDeBarras}.json`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 1) {
+            const produto = data.product;
+            productName.textContent = produto.product_name || 'Nome não encontrado';
+            exibirImagemProduto(produto.image_url);
+            mostrarIngredientesNocivos(produto.ingredients_text || '');
+            const categoria = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
+            mostrarAlternativasSaudaveis(categoria);
+            scannerContainer.style.display = "none";
+            productInfo.style.display = "block";
+          } else {
+            errorMessage.style.display = 'block';
+            document.getElementById('error-text').textContent = 'Produto não encontrado ou erro ao acessar a API.';
+          }
         })
-        .catch(function(error) {
-          console.log('Falha ao registrar o Service Worker:', error);
+        .catch(() => {
+          errorMessage.style.display = 'block';
+          document.getElementById('error-text').textContent = 'Erro ao acessar a API.';
         });
     }
 
-    // Resto do código JS (sem alterações)
+    function mostrarIngredientesNocivos(ingredientes) {
+      const ingredientesArray = ingredientes.split(',').map(ing => ing.trim().toLowerCase());
+      const nocivos = ingredientesArray.filter(ing => ingredientesNocivos.some(ingrediente => ing.includes(ingrediente)));
+      badIngredients.textContent = nocivos.length ? nocivos.join(', ') : 'Nenhum ingrediente nocivo encontrado';
+    }
+
+    function mostrarAlternativasSaudaveis(categoria) {
+      const alternativas = alternativasSaudaveis[categoria];
+      healthyAlternatives.textContent = alternativas?.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
+    }
+
+    startBtn.addEventListener('click', () => {
+      scannerContainer.style.display = 'block';
+      
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+
+        html5QrCode.start(
+          { facingMode: "environment" },  // Usando a câmera traseira do dispositivo
+          { fps: 10, qrbox: 250 },
+          (decodedText) => {
+            html5QrCode.stop();
+            buscarProdutoNaAPI(decodedText);
+          },
+          (err) => {
+            console.error("Erro ao ler o código", err);
+          }
+        );
+      }
+    });
+
+    scanAgainBtn.addEventListener('click', () => {
+      productInfo.style.display = "none";
+      scannerContainer.style.display = "block";
+      
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          html5QrCode.stop();
+          buscarProdutoNaAPI(decodedText);
+        },
+        (err) => {
+          console.error("Erro ao ler o código", err);
+        }
+      );
+    });
+
+    closeErrorBtn.addEventListener('click', () => {
+      errorMessage.style.display = 'none';
+    });
   </script>
 </body>
 </html>
