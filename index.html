@@ -34,9 +34,8 @@
     }
 
     .top-image {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
+      max-width: 100%;
+      height: auto;
       border-radius: 10px;
       margin-bottom: 20px;
     }
@@ -173,7 +172,6 @@
       margin-right: 10px;
     }
 
-    /* ✅ RESPONSIVIDADE */
     @media (max-width: 500px) {
       .container {
         padding: 15px;
@@ -196,7 +194,7 @@
       }
 
       .top-image {
-        max-height: 160px;
+        max-height: 180px;
       }
     }
   </style>
@@ -204,7 +202,6 @@
 <body>
   <div class="container">
     <img src="https://sdmntprwestus.oaiusercontent.com/files/00000000-6f94-6230-b249-09f4ec1b3d5d/raw?se=2025-05-16T02%3A05%3A02Z&sp=r&sv=2024-08-04&sr=b&scid=00000000-0000-0000-0000-000000000000&skoid=61180a4f-34a9-42b7-b76d-9ca47d89946d&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-15T21%3A50%3A18Z&ske=2025-05-16T21%3A50%3A18Z&sks=b&skv=2024-08-04&sig=ocxUGdd14TqJA94KKy/dM3JgnoJZmxCB9kMVDD16wcQ%3D" alt="Imagem Inicial" class="top-image" />
-
     <p><i class="fas fa-search icon"></i> Verifique ingredientes ultraprocessados e veja alternativas mais saudáveis</p>
 
     <button id="start-scanner"><i class="fas fa-camera-retro"></i> Iniciar Scanner</button>
@@ -231,6 +228,135 @@
     </div>
   </div>
 
+  <!-- SCRIPT HTML5 QR CODE -->
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <script>
+    const startBtn = document.getElementById('start-scanner');
+    const scannerContainer = document.getElementById('scanner-container');
+    const productInfo = document.getElementById('product-info');
+    const productName = document.getElementById('product-name');
+    const badIngredients = document.getElementById('bad-ingredients');
+    const healthyAlternatives = document.getElementById('healthy-alternatives');
+    const productPhoto = document.getElementById('product-photo');
+    const scanAgainBtn = document.getElementById('scan-again');
+    const errorMessage = document.getElementById('error-message');
+    const closeErrorBtn = document.getElementById('close-error');
+
+    let html5QrCode;
+
+    const ingredientesNocivos = ['açúcar', 'glutamato monossódico', 'corante', 'gordura trans', 'benzoato de sódio', 'acidulante', 'corante caramelo', 'glicose', 'sódio'];
+
+    const alternativasSaudaveis = {
+      'bebidas': [
+        { nome: 'Suco Natural de Laranja' },
+        { nome: 'Água de Coco' },
+        { nome: 'Chá Verde Natural' }
+      ],
+      'snacks': [
+        { nome: 'Mix de Nozes e Castanhas' },
+        { nome: 'Barras de Cereal Integral' },
+        { nome: 'Chips de Abobrinha Assada' }
+      ],
+      'biscoitos': [
+        { nome: 'Biscoito Integral de Aveia' },
+        { nome: 'Biscoito Sem Glúten de Cacau' },
+        { nome: 'Biscoito de Amêndoas' }
+      ],
+      'refrigerantes': [
+        { nome: 'Água com Gás com Limão' },
+        { nome: 'Chá Natural de Ervas' },
+        { nome: 'Kombucha' }
+      ],
+      'laticínios': [
+        { nome: 'Iogurte Natural Integral' },
+        { nome: 'Queijo Minas Frescal' },
+        { nome: 'Kefir' }
+      ]
+    };
+
+    function exibirImagemProduto(urlImagem) {
+      if (urlImagem) {
+        const img = new Image();
+        img.onload = function() {
+          productPhoto.src = urlImagem;
+        };
+        img.onerror = function() {
+          productPhoto.src = 'https://via.placeholder.com/150';
+        };
+        img.src = urlImagem;
+      } else {
+        productPhoto.src = 'https://via.placeholder.com/150';
+      }
+    }
+
+    function buscarProdutoNaAPI(codigoDeBarras) {
+      const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${codigoDeBarras}.json`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 1) {
+            const produto = data.product;
+            productName.textContent = produto.product_name || 'Nome não encontrado';
+            exibirImagemProduto(produto.image_url);
+            mostrarIngredientesNocivos(produto.ingredients_text || '');
+            const categoria = produto.categories ? produto.categories.split(',')[0].toLowerCase() : 'outros';
+            mostrarAlternativasSaudaveis(categoria);
+            scannerContainer.style.display = "none";
+            productInfo.style.display = "block";
+          } else {
+            errorMessage.style.display = 'block';
+            document.getElementById('error-text').textContent = 'Produto não encontrado ou erro ao acessar a API.';
+          }
+        })
+        .catch(() => {
+          errorMessage.style.display = 'block';
+          document.getElementById('error-text').textContent = 'Erro ao acessar a API.';
+        });
+    }
+
+    function mostrarIngredientesNocivos(ingredientes) {
+      const ingredientesArray = ingredientes.split(',').map(ing => ing.trim().toLowerCase());
+      const nocivos = ingredientesArray.filter(ing => ingredientesNocivos.some(ingrediente => ing.includes(ingrediente)));
+      badIngredients.textContent = nocivos.length ? nocivos.join(', ') : 'Nenhum ingrediente nocivo encontrado';
+    }
+
+    function mostrarAlternativasSaudaveis(categoria) {
+      const alternativas = alternativasSaudaveis[categoria];
+      healthyAlternatives.textContent = alternativas?.length ? alternativas.map(alt => alt.nome).join(', ') : 'Nenhuma alternativa encontrada';
+    }
+
+    startBtn.addEventListener('click', () => {
+      scannerContainer.style.display = 'block';
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          html5QrCode.stop();
+          buscarProdutoNaAPI(decodedText);
+        },
+        (err) => {}
+      );
+    });
+
+    scanAgainBtn.addEventListener('click', () => {
+      productInfo.style.display = "none";
+      scannerContainer.style.display = "block";
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          html5QrCode.stop();
+          buscarProdutoNaAPI(decodedText);
+        },
+        (err) => {}
+      );
+    });
+
+    closeErrorBtn.addEventListener('click', () => {
+      errorMessage.style.display = 'none';
+    });
+  </script>
 </body>
 </html>
